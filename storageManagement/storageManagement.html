@@ -1,0 +1,337 @@
+<head>
+  <title>Storage Management</title>
+</head>
+
+<body>
+
+  {{> menu}}
+  {{> cuerpo}}
+</body>
+
+<template name="menu">
+  <div id="header">
+    <div id="headerLogoContainer"><img id="headerLogo" src="/citi.png"/></div>
+    <ul id="headerMenu">
+      <li data-menuanchor="proys" class="menu-link active"><a href="#proyectos">PROYECTOS</a></li>
+      <li class="menu-link" data-menuanchor="fails"><a href="#fallas">FALLAS</a></li>
+      <li class="menu-link" data-menuanchor="calc"><a href="#calculador">CALCULADOR</a></li>
+    </ul>
+  </div>
+</template>
+<template name="cuerpo">
+  <div id="fullpage">
+  	<div class="section" id="proyectos">
+  		<div class='vista-activa' id='proyectos-container'>
+  			<h1>Project List</h1>
+        <div class='grid-layout'>
+          {{proys}}
+          <div id='proyectosGrid'></div>
+        </div>
+        <div class='action-buttons'>
+          <p><input type="submit" value="Nuevo" class="nuevo-button boton"></p>
+          <p><input type="submit" value="Editar" class="editar-button boton"></p>
+          <p><input type="submit" value="Mostrar todo" class="mostrar-button boton"></p>
+        </div>
+  		</div>
+      <div class='no-activa' id='nuevo-proyecto'>
+        <p class='volver-proyectos'>Back</p>
+        <div id="nuevo-container">
+          <div class='seccion'>
+            <p class='titulo'>PROJECT</p>
+            <div class='sub-seccion'>
+              <p class='titulo'>Project</p>
+              <p class='texto-campo'>Proyect name</p>
+              <input class='projectName valor-campo' type='text'/>
+              <p class='texto-campo'>Project manager</p>
+              <input class='proyectManager valor-campo' type='text'/>
+              <p class='texto-campo'>Commitment date</p>
+              <input class='fechaCompromiso valor-campo' type='text'/>
+              <p class='texto-campo'>Platform</p>
+              <select class='select-proyecto plataforma'>
+                <option value="NAS">BACKUPS</option>
+                <option value="SAN">MAINFRAME</option>
+                <option value="OPEN">TANDEM</option>
+                <option value="AVAMAR">UNISYS</option>
+              </select>
+              <p class='texto-campo'>Type</p>
+              <select class='select-proyecto tipoProyecto'>
+                <option value="nuevo">New</option>
+                <option value="upgrade">Upgrade</option>
+                <option value="decom">Decommission</option>
+              </select>
+              <br/><br/>
+              <table class='tablaProject'>
+                <tr>
+                  <th><p class='texto-campo'>Description</p></th>
+                  <th><p class='texto-campo'>Justification</p></th>
+                  <th><p class='texto-campo'>Impact</p></th>
+                </tr>
+                <tr>
+                  <td><textarea class='projectDesc valor-campo' rows='10' cols='40'></textarea></td>
+                  <td><textarea class='projectJust valor-campo' rows='10' cols='40'></textarea></td>
+                  <td><textarea class='projectImpact valor-campo' rows='10' cols='40'></textarea></td>
+                </tr>
+              </table>
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              <br/><br/>
+              <div class="hdSumDiv">
+                <p class='texto-campo'>HW summary</p>
+                <textarea class='hwSummary valor-campo' rows='10' cols='  50'></textarea>
+              </div>
+            </div>
+            <div class='sub-seccion'>
+              <p class='titulo'>Financial</p>
+                <p class='texto-campo'>CMU</p>
+                <input class='cmu valor-campo' type='text'/>
+                <p class='texto-campo'>SIRH</p>
+                <input class='sirh valor-campo' type='text'/>
+                <p class='texto-campo'>IEP</p>
+                <input class='iep valor-campo' type='text'/>
+                <p class='texto-campo'>GOC CODE</p>
+                <input class='goc valor-campo' type='text'/>
+            </div>
+            <div class='sub-seccion'>
+              <p class='titulo'>EMC</p>
+              <p class='texto-campo'>Quote</p>
+              <input class='quote valor-campo' type='text'/>
+              <p class='texto-campo'>Sales Order</p>
+              <input class='so valor-campo' type='text'/>
+              <p class='texto-campo'>Purchase Order</p>
+              <input class='po valor-campo' type='text'/>
+            </div>
+            <!--<div class='sub-seccion'>
+              <p class='titulo'>Packing list</p>
+              <p class='texto-campo'>Deliverable</p>
+              <input class='packingList valor-campo' type='text'/>
+            </div>-->
+          </div>
+          <div class='seccion'>
+            <p class='titulo'>REQUIREMENTS</p>
+            <div class='sub-seccion'>
+              <p class='titulo'>OS Version</p>
+              <p class='texto-campo'>CATE</p>
+              <input class='cate valor-campo' type='text'/>
+            </div>
+            <div class='sub-seccion'>
+              <p class='titulo'>Power profile</p>
+              <p class='texto-campo'>Power initiative</p>
+              <input class='powerInitiative valor-campo' type='text'/>
+              <br>
+              <br>
+              <div class='divbtn agregarRequirement'>Add requirement</div><br/><br/><br/>
+              <div class='divReq'></div>
+              <br>
+              <br>
+              <div class='divbtn agregarPP'>Add power profile</div><br/><br/><br/>
+              <div class='divPP'></div>
+            </div>
+            <!--<div class='sub-seccion div-network'>
+              <p class='titulo' style='float:left;'>Network</p>
+              <p class='texto-campo'>Cantidad</p>
+              <input class='cantidad valor-campo' type='text'/>
+              <p class='texto-campo'>Descripción</p>
+              <input class='descripcion-network valor-campo' type='text'/>
+              <select class='network-select'>
+                <option>UTP 1Gb</option>
+                <option>FIBRA 10Gb</option>
+                <option>VP LOGICS</option>
+              </select>
+              <div class='div-btn agregar-network'>Agregar</div>
+              <div class='campos-network'></div>
+            
+            </div>-->
+            <!--<div class='sub-seccion'>
+              <p class='titulo'>Network</p>
+            </div>-->
+          </div>
+          <div class='seccion'>
+            <p class='titulo'>EQUIPMENT</p>
+            <!--<div class='sub-seccion'>
+              <p class='titulo'>CITI</p>
+              <p class='texto-campo'>Aperture</p>
+              <input class='aperture valor-campo' type='text'/>
+              <p class='texto-campo'>Citi Device Name</p>
+              <input class='deviceName valor-campo' type='text'/>
+              <p class='texto-campo'>Serial number</p>
+              <input class='serialNumber valor-campo' type='text'/>
+              <p class='texto-campo'>Invoice</p>
+              <input class='invoice valor-campo' type='text'/>
+              
+            </div>-->
+            <div class="sub-seccion">
+              <!--<p class='titulo'>EQUIPOS</p>
+              <p class='texto-campo'>Cantidad</p>
+              <input class='cantidadEq valor-campo' type='text'/>-->
+              <!--<p class='texto-campo'>Family</p>
+              <select class='select-proyecto equipo'>
+                <option value="vnx5000">VNX</option>
+                <option value="vnx40">VMAX</option>
+                <option value="vnx100">CENTERA</option>
+                <option value="vnx100">DATA DOMAIN</option>
+                <option value="vnx100">CENTERA</option>
+                <option value="vnx100">CLARION</option>
+                <option value="vnx100">SWITCHES</option>
+              </select>
+              <p class='texto-campo'>Model</p>
+              <select class='select-proyecto equipo'>
+                <option value="vnx5000">vnx5000</option>
+                <option value="vnx40">vnx40</option>
+                <option value="vnx100">vnx100</option>
+              </select>
+              <p class='texto-campo' style='float:left;'>Site</p>
+              <select class='site' style='float:left;'>
+                <option value="jrdc">JRDC</option>
+                <option value="qrdc">QRDC</option>
+              </select>
+              <select class='equipo-select' style='float:left;'>
+                <option>switches</option>
+                <option>vnx5000</option>
+                <option>vnx5200</option>
+              </select>-->
+              <br>
+              <div class='divbtn agregarEquipo'>Agregar equipos</div><br/><br/>
+              <div class='divEquipos'></div>
+            </div>
+            <!--<div class='sub-seccion'>
+              <p class='titulo'>EMC</p>
+              <p class='texto-campo'>Purchase Order</p>
+              <input class='po valor-campo' type='text'/>
+              <p class='texto-campo'>Sales Order</p>
+              <input class='so valor-campo' type='text'/>
+              <p class='texto-campo'>Quote</p>
+              <input class='quote valor-campo' type='text'/>
+              <p class='texto-campo'>SR</p>
+              <input class='sr valor-campo' type='text'/>
+            </div>  -->
+          </div>
+          <div class='seccion'>
+            <p class='titulo'>INSTALLATION</p>
+            <div class='sub-seccion div-sn'>
+              <p class='titulo'>Citi</p>
+              <div class='boton-formulario agregar-sn'>Agregar SN</div>
+            </div>
+            <div class='sub-seccion'>
+              <!--<p class='titulo'>Acquire Project Team</p>
+              <p class='texto-campo'>Assigned Human Resources</p>
+              <select class='human-resource'>
+                <option>JORGE ALFAN FOMBON</option>
+                <option>RAMON ALBERTO TRIAY ESPINOSA</option>
+                <option>JUAN CARLOS MACHUCA CAZARES</option>
+                <option>ALONSO MARIN</option>
+                <option>MICHELLE SALAZAR</option>
+                <option>ROSARIO MONROY</option>
+              </select>
+              <div class='div-btn agregar-recurso'>Agregar</div>
+              <textarea class='human-resources valor-campo' rows='10' cols='  50'></textarea>-->
+              <div class='divbtn agregarProfile'>Add profile</div>
+              <div class='projectTeam'></div>
+            </div>
+            <div class='sub-seccion'>
+              <p class='titulo'>Executing Project Plan</p>
+              <p class='texto-campo'>Programming&Executing Activities</p>
+              <input class='program-activities valor-campo' type='text'/>
+            </div>
+          </div>
+          <div class='seccion'>
+            <p class='titulo'>ACTIVITIES</p>
+            <div class='sub-seccion'>
+              <div class='divbtn agregarActividad'>Add timeline</div>
+              <br><br>
+              <div class='activities'></div>
+              <p class='texto-campo'>Notes</p>
+              <textarea class='tlNotes valor-campo' style='width: 40%;' rows='10' cols='  50'></textarea>
+            </div>
+          </div>
+          <input class="id_" type="text" hidden/>
+          <div class='seccion'>
+            <p class='titulo'>NOTES</p>
+            <div class='sub-seccion'>
+              <p class='titulo'>Notes</p>
+              <p class='texto-campo'>Notes/Reminders</p>
+              <textarea class='projectNotes valor-campo' style='width: 50%;' rows='10' cols='  50'></textarea>
+            </div>
+          </div>
+        </div>
+        <div class='guardar boton'>GUARDAR</div>
+      </div>
+  	</div>
+    <div class="section" id="fallas">
+      <div id='fallas-container'>
+        medio
+      </div>
+    </div>
+    <div class="section" id="calculador">
+      <div id='calculador-container'>
+        <div class="container">
+          {{> espacio}}
+          <div id="tiers-container" class="CSSTableGenerator tiers" style="display:none;">
+            <table id="tablaTiers">
+              <thead>
+                <tr>
+                  <td>TIER</td>
+                  <td>GB</td>
+                  <td>TB</td>
+                  <td>Pres. Citi</td>
+                  <td>Discos Quote</td>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div id="discos-container">
+            {{#each tasks}}
+              {{> discos}}
+            {{/each}}
+          </div>
+          <div id="resultados">
+            <table id="tablaResultados">
+              <thead>
+                <tr>
+                  <td>DISCOS</td>
+                  <td>COSTO</td>
+                  <td>DESCUENTO</td>
+                  <td>COSTO TOTAL</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="res-discos"></td>
+                  <td id="res-costo" class="right-align"></td>
+                  <td id="res-desc" class="right-align"></td>
+                  <td id="res-total" class="right-align"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="espacio">
+  <div id="divEspacio">
+    <form class="espacio-solicitado">
+      <input id="in-espacio" type="text" name="espacio" placeholder="Espacio solicitado" />
+    </form>
+  </div>
+</template>
+
+<template name="discos">
+  <div class="disco-row">
+    <div class="disco-col"><input type="radio" checked name="disco-radio"/></div>
+    <div class="disco-col">{{nombre}}</div>
+    <div class="disco-col">{{descripcion}}</div>
+    <div class="disco-col">{{raw}}</div>
+    <div class="disco-col usable">{{usable}}</div>
+    <div class="disco-col precio">{{formatMoney precio}}</div>
+    <div class="disco-col">{{formatMoney precioGB}}</div>
+  </div>
+</template>
