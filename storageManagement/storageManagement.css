@@ -97,6 +97,310 @@ input, textarea{
 /*
 	PROYECTOS
 */
+
+.modalProject{
+  opacity: 0;
+  z-index: 10011;
+  width: 550px;
+  height: 400px;
+  background-color: red;
+  margin: 0 auto;
+  top: 200px;
+  position: relative;
+  border-radius: 10px;
+}
+
+.modalProject .projectOptions{
+  height: 100%;
+}
+
+.project-section{
+  width: 50%;
+  height: 75%;
+  float: left;
+  background-color: #E8E8E8;
+}
+
+.modal-bg{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #444444;
+  opacity: .3;
+  z-index: 10001;
+}
+
+.poject-submit{
+  height: 15%;
+  width: 100%;
+  float: left;
+  display: table;
+  background-color: #E8E8E8;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.poject-submit a{
+  background-color: #ABABAB;
+  margin: 0 auto;
+  display: table-cell;
+  position: relative;
+  height: 80%;
+  width: 150px;
+  text-align: center;
+  font-size: larger;
+    /* display: block; */
+    /* padding: 10px; */
+    /* border-style: outset; */
+  vertical-align: middle;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+/*
+.project-section.left{
+  border-bottom-left-radius: 10px;
+}
+
+.project-section.right{
+  border-bottom-right-radius: 10px;
+}
+*/
+
+.projectOptions a.title{
+  background-color: green;
+  width: 50%;
+  float: left;
+  text-align: center;
+  display: block;
+  color: white;
+  border-top: 1px solid #444444;
+  background: linear-gradient(#BBBBBB, #151515);
+  background: -webkit-linear-gradient(#BBBBBB, #151515); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#BBBBBB, #151515); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#BBBBBB, #151515); /* For Firefox 3.6 to 15 */
+}
+
+a.modalTitle{
+  width: 100%;
+  text-align: center;
+  display: block;
+  /*padding: 7px 0px;*/
+  font-size: larger;
+  color: white;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  background: -webkit-linear-gradient(#4A0808, #E64444); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#4A0808, #E64444); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#4A0808, #E64444); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#4A0808, #E64444); /* Standard syntax */
+}
+
+.titleDiv{
+  height: 10%;
+}
+
+a.texto-campo{
+  width: 140px;
+  display: inline-block;
+}
+
+input.valor-campo{
+  width: 180px;
+  margin: 0 20px;
+}
+
+.lineaCampos{
+  padding: 15px 0;
+}
+
+/* botones en tabs */
+.divActionButtons{
+  width: 25%;
+  margin: 0 auto;
+}
+
+.boton-accion{
+  display: inline-block;
+  border-radius: 5px;
+  border: 1px solid #BBB;
+  padding: 10px;
+  color: #6F6F6F;
+  margin: 0 15px;
+  background-color: #ddd;
+}
+
+.label-select{
+  float: left;
+}
+
+.project-section table{
+  height: 100%;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  width: 100%;
+}
+
+.divProjectInformation{
+  padding: 10px 0;
+}
+
+.seccion-plantilla a.title {
+  display: block;
+  color: white;
+  width: 100%;
+  background: linear-gradient(#BBBBBB, #151515);
+  background: -webkit-linear-gradient(#BBBBBB, #151515); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#BBBBBB, #151515); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#BBBBBB, #151515); /* For Firefox 3.6 to 15 */
+}
+
+.contenedor-device{
+  padding-top: 20px;
+}
+
+.checks{
+  transform: scale(2);
+  -ms-transform: scale(2); /* IE */
+  -moz-transform: scale(2); /* FF */
+  -webkit-transform: scale(2); /* Safari and Chrome */
+  -o-transform: scale(2); /* Opera */
+  padding: 10px;
+}
+/*.project-section table.left{
+  border-bottom-left-radius: 10px;
+}
+
+.project-section table.right{
+  border-bottom-right-radius: 10px;
+}
+*/
+.project-section table tr td{
+  text-align: center;
+}
+
+td.texto-tabla{
+  text-align: left !important;
+  padding-left: 15px;
+}
+
+/*  NEW REQUEST  */
+.plantillaProyecto{
+  width: 90%;
+  position: relative;
+  margin: 0 auto;
+  top: 100px;
+  height: 100%;
+}
+
+.plantillaProyecto .seccion-plantilla{
+  width: 100%;
+  padding: 10px 0;
+}
+
+#navigationMenu{
+  position: fixed;
+  left: 0;
+  top: 150px;
+}
+
+#navigationMenu li{
+  list-style:none;
+  height:39px;
+  padding:2px;
+  width:40px;
+}
+
+#navigationMenu span{
+  /* Container properties */
+  width:0;
+  left:38px;
+  padding:0;
+  position:absolute;
+  overflow:hidden;
+
+  /* Text properties */
+  font-family:'Myriad Pro',Arial, Helvetica, sans-serif;
+  font-size:18px;
+  font-weight:bold;
+  letter-spacing:0.6px;
+  white-space:nowrap;
+  line-height:39px;
+
+  /* CSS3 Transition: */
+  -webkit-transition: 0.25s;
+
+  /* Future proofing (these do not work yet): */
+  -moz-transition: 0.25s;
+  transition: 0.25s;
+}
+
+#navigationMenu a{
+  /* The background sprite: */
+  /*background:url('img/navigation.jpg') no-repeat;*/
+
+  height:39px;
+  width:38px;
+  display:block;
+  position:relative;
+}
+
+/* General hover styles */
+
+#navigationMenu a:hover span{ width:auto; padding:0 20px;overflow:visible; }
+#navigationMenu a:hover{
+  text-decoration:none;
+
+  /* CSS outer glow with the box-shadow property */
+  -moz-box-shadow:0 0 5px #9ddff5;
+  -webkit-box-shadow:0 0 5px #9ddff5;
+  box-shadow:0 0 5px #9ddff5;
+}
+
+
+#navigationMenu .home {
+  background: url('/home.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #7da315;
+}
+#navigationMenu .home:hover { }
+#navigationMenu .home span{
+  background-color:#7da315;
+  color:#3d4f0c;
+  text-shadow:1px 1px 0 #99bf31;
+}
+
+/* Blue Button */
+
+#navigationMenu .projects {
+  background: url('/box.png'); 
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #1e8bb4;
+}
+#navigationMenu .projects:hover { }
+#navigationMenu .projects span{
+  background-color:#1e8bb4;
+  color:#223a44;
+  text-shadow:1px 1px 0 #44a8d0;
+}
+
+/* Orange Button */
+
+#navigationMenu .breakfix {
+  background: url('/fix.png'); 
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #c86c1f;
+}
+#navigationMenu .breakfix:hover { }
+#navigationMenu .breakfix span{
+  background-color:#c86c1f;
+  color:#5a3517;
+  text-shadow:1px 1px 0 #d28344;
+}
+
 #proyectos-container{
 	width: 100%;
 	height: 100%;
@@ -231,8 +535,12 @@ textarea{
 
 .select-proyecto{
 	display: inline-block;
-    float: left;
-    margin-right: 8px;
+  border: 1px solid #ccc;
+  float: left;
+  width: 190px;
+  height: 25px;
+  margin-left: 20px;
+  margin-right: 25px;
 }
 
 .div-btn{

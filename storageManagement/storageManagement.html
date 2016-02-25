@@ -3,12 +3,12 @@
 </head>
 
 <body>
-
+  {{> header}}
   {{> menu}}
-  {{> cuerpo}}
+
 </body>
 
-<template name="menu">
+<template name="header">
   <div id="header">
     <div id="headerLogoContainer"><img id="headerLogo" src="/citi.png"/></div>
     <ul id="headerMenu">
@@ -18,11 +18,296 @@
     </ul>
   </div>
 </template>
+<template name="menu">
+  <ul id="navigationMenu">
+    <li>
+      <a class="home" href="#">
+        <span>Home</span>
+      </a>
+    </li>
+    <li>
+      <a class="projects" href="#">
+        <span>Projects</span>
+      </a>
+    </li>
+    <li>
+      <a class="breakfix" href="#">
+        <span>Break & fix</span>
+      </a>
+    </li>
+  </ul>
+</template>
+
+<template name="newRequest">
+  <div class="plantillaProyecto">
+    <div class="seccion-plantilla">
+      <div>
+        <a class="title">Project Information</a>
+        <div class="divProjectInformation">
+          <div class="lineaCampos">
+            <a class="texto-campo">Project Name</a>
+            <input class="valor-campo" type="text" name="projectName"/>
+            <a class="texto-campo">Reason To Install</a>
+            <input class="valor-campo" type="text" name="installReason"/>
+            <a class="texto-campo">Project comments</a>
+            <input class="valor-campo" type="text" name="projectComments"/>
+          </div>
+          <div class="lineaCampos">
+            <a class="texto-campo">PO</a>
+            <input class="valor-campo" type="text" name="po"/>
+            <a class="texto-campo">Contact name</a>
+            <input class="valor-campo" type="text" name="contactName"/>
+            <a style="float:left;" class='texto-campo'>Platform</a>
+              <select class='select-proyecto'>
+                <option value="NAS">BACKUPS</option>
+                <option value="SAN">MAINFRAME</option>
+                <option value="OPEN">TANDEM</option>
+                <option value="AVAMAR">UNISYS</option>
+              </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="seccion-plantilla tabs">
+      <ul>
+        <li><a href="#tabs-1">Devices</a></li>
+        <li class="tabsp"><a href="#tabs-2">Space Assignment</a></li>
+        <li><a href="#tabs-3">Configuration</a></li>
+        <li class="tabpp"><a href="#tabs-4">Power</a></li>
+        <li class="tabnp"><a href="#tabs-5">Network/Storage</a></li>
+        <li><a href="#tabs-6">Parent Device</a></li>
+      </ul>
+      <div id="tabs-1">
+        <div class="divActionButtons"><a class="boton-accion">Create</a><a class="boton-accion">Cancel</a></div>
+        <div class="contenedor-device">
+          <a class='texto-campo label-select'>Family</a><select class='select-proyecto equipo'><option value='vnx5000'>VNX</option><option value='vnx40'>VMAX</option><option value='vnx100'>CENTERA</option><option value='vnx100'>DATA DOMAIN</option><option value='vnx100'>CENTERA</option><option value='vnx100'>CLARION</option><option value='vnx100'>SWITCHES</option></select>
+          <a class='texto-campo label-select'>Model</a><select class='select-proyecto equipo'><option value='vnx5000'>vnx5000</option><option value='vnx40'>vnx40</option><option value='vnx100'>vnx100</option></select>
+          <a class='texto-campo label-select' style='float:left;'>Site</a><select class='site select-proyecto' style='float:left;'><option value='jrdc'>JRDC</option><option value='qrdc'>QRDC</option></select><br/><br/><br/>
+          <a class='texto-campo'>Tipo</a><input class='tipoEq valor-campo' type='text' value=''/>
+          <a class='texto-campo'>Device Name</a><input class='nombreEq valor-campo' type='text'/>
+          <a class='texto-campo'>Serial Number</a><input class='snEq valor-campo' type='text'/>
+          <a class='texto-campo'>Aperture</a><input class='apertureEq valor-campo' type='text'/><br/><br/>
+          <a class='texto-campo'>Invoice</a><input class='invoiceEq valor-campo' type='text'/>
+          <a class='texto-campo'>Grid location</a><input class='coorEq valor-campo' type='text'/>
+          <a class='texto-campo'>Service Request</a><input class='srEq valor-campo' type='text'/>
+          <a class='texto-campo'>Notes</a><input class='notesEq valor-campo' type='text'/><br/><br/>
+          <div class="tabs-device">
+            <ul>
+              <li><a href="#dtabs-1">Requirements</a></li>
+              <li class="dev-conf"><a href="#dtabs-2">Configuration</a></li>
+              <li class="dev-pwr"><a href="#dtabs-3">Power</a></li>
+              <li class="dev-ips"><a href="#dtabs-4">IP Addresses</a></li>
+              <li class="dev-conn"><a href="#dtabs-5">Connections</a></li>
+              <li class="dev-strg"><a href="#dtabs-6">Storage</a></li>
+            </ul>
+            <div id="dtabs-1">
+              <table style="width: 270px;height: 170px;" class="left">
+                <tr>
+                  <td class="texto-tabla">IP Addresses</td>
+                  <td><input class="chk-ips checks" type="checkbox" checked name="dev-ips"/></td>
+                </tr>
+                <tr>
+                  <td class="texto-tabla">Configuration Information</td>
+                  <td><input class="chk-conf checks" type="checkbox" checked name="dev-conf"/></td>
+                </tr>
+                <tr>
+                  <td class="texto-tabla">Connections</td>
+                  <td><input class="chk-con checks" type="checkbox" checked name="dev-conn"/></td>
+                </tr>
+                <tr>
+                  <td class="texto-tabla">Storage</td>
+                  <td><input class="chk-strg checks" type="checkbox" checked name="dev-strg"/></td>
+                </tr>
+              </table>
+            </div>
+            <div class="dev-conf" id="dtabs-2">
+              <a class='texto-campo'>Operating System</a><input class='valor-campo' type='text'/>
+              <a class='texto-campo'>Cate</a><input class='valor-campo' type='text'/>
+            </div>
+            <div class="dev-pwr" id="dtabs-3">
+              <a class="boton-accion">Add</a><br><br>
+              <div class='lineaPC'>
+                <a class='texto-campo'>Quantity</a><input class='valor-campo quantityPP' type='text'/>
+                <a class='texto-campo'>Connector Type</a><input class='valor-campo connectorTypePP' type='text'/>
+                <a class='texto-campo'>Phases</a><input class='valor-campo fasesPP' type='text'/>
+                <a class='texto-campo'>Voltaje</a><input class='valor-campo voltajePC' type='text'/>
+              </div><br/>
+            </div>
+            <div  class="dev-ips" id="dtabs-4">
+              <a class="boton-accion">Add</a><br><br>
+              <a class='texto-campo'>Subnet</a><input class='valor-campo subnet' type='text'/>
+              <a class='texto-campo'>IP</a><input class='valor-campo cableIp' type='text'/>
+              <a class='texto-campo'>Mask</a><input class='valor-campo mask' type='text'/><br><br>
+              <a class='texto-campo'>Default gateway</a><input class='valor-campo defGateway' type='text'/>
+              <a class='texto-campo'>DNS details</a><input class='valor-campo dnsDetails' type='text'/><br><br>
+            </div>
+            <div class="dev-conn" id="dtabs-5">
+              <a class="boton-accion">Add</a>
+              <div class='lineaPC'>
+                <a class='texto-campo'>Quantity</a><input class='valor-campo quantityPC' type='text'/>
+                <a class='texto-campo'>Connector Type</a><input class='valor-campo connTypePC' type='text'/>
+                <a class='texto-campo'>Cable Type</a><input class='valor-campo cableTypePC' type='text'/><br><br>
+                <a class='texto-campo'>Speed</a><input class='valor-campo speedPC' type='text'/>
+                <a class='texto-campo'>Length</a><input class='valor-campo lengthPC' type='text'/>
+              </div><br/>
+            </div>
+            <div class="dev-strg" id="dtabs-6">
+              <a class="boton-accion">Add</a><br><br>
+              <a class='texto-campo'>Quantity</a><input class='valor-campo quantDisk' type='text'/>
+              <a class='texto-campo'>Type</a><input class='valor-campo typeDisk' type='text'/>
+              <a class='texto-campo'>Capacity</a><input class='valor-campo capDisk' type='text'/><br><br>
+              <a class='texto-campo'>Raid</a><input class='valor-campo raidDisk' type='text'/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tabs-2" class="tabsp">
+        <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+      </div>
+      <div id="tabs-3">
+        <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+        <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+      </div>
+      <div id="tabs-4" class="tabpp">
+        <div class='lineaPC'>
+          <p class='texto-campo'>Cantidad</p><input class='valor-campo cantidadPC' type='text'/>
+          <p class='texto-campo'>Tipo de conector</p><input class='valor-campo tipoPC' type='text'/>
+          <p class='texto-campo'>Fases</p><input class='valor-campo fasesPC' type='text'/>
+          <p class='texto-campo'>Voltaje</p><input class='valor-campo voltajePC' type='text'/>
+        </div><br/>
+        <div class='lineaPP'>
+          <p class='texto-campo'>Site</p><input class='valor-campo modeloPP' type='text'/>
+          <select class='tipoPP'><option>Nuevo</option><option>Upgrade</option></select>
+          <p class='texto-campo'>Power consumption</p><input class='valor-campo consumptionPP' type='text'/><br/>
+        </div>
+      </div>
+      <div id="tabs-5" class="tabnp"></div>
+      <div id="tabs-6"></div>
+    </div>
+  </div>
+</template>
+
+<template name="modalNuevo">
+  <div class="modal-bg"></div>
+  <div class="modalProject">
+    <div class="projectOptions">
+      <div class="titleDiv">
+        <a class="modalTitle">Equipment installation request</a>
+        <a class="title">Installation information</a>
+        <a class="title">Location</a>
+      </div>
+      <div class="project-section left">
+        <table class="left">
+          <tr>
+            <td class="texto-tabla">COB</td>
+            <td><input class="checks" type="checkbox" name="cob"/></td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Power provitioning</td>
+            <td><input class="checks" type="checkbox" name="pp"/></td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Network provitioning</td>
+            <td><input class="checks" type="checkbox" name="np"/></td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Space provitioning</td>
+            <td><input class="checks" type="checkbox" name="sp"/></td>
+          </tr>
+        </table>
+      </div>
+      <div class="project-section right">
+        <table class="right">
+          <tr>
+            <td class="texto-tabla">Region</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="region">
+                <option>Latam</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Country</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="country">
+                <option>Mexico</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">City</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="city">
+                <option>CDMX</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Building</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="building">
+                <option>Jardines</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Floor</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="floor">
+                <option>2</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Data Center</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="dataCenter">
+                <option>Jardines</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="texto-tabla">Site category</td>
+            <td class="texto-tabla">
+              <select class="modalSelect" name="category">
+                <option>Data center</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="poject-submit">
+        <a class ="request-submit">Submit request</a>
+      </div>
+    </div>
+  </div>
+</template>
+
 <template name="cuerpo">
+  <div class='vista-activa' id='proyectos-container'>
+        <div class='grid-layout'>
+          {{proys}}
+          <div id='proyectosGrid'></div>
+        </div>
+        <div class='action-buttons'>
+          <p><input type="submit" value="Nuevo" class="nuevo-button boton"></p>
+        </div>
+      </div>
+</template>
+
+<template name="newProject">
+  <div class="project-container">
+    Nuevo
+  </div>
+</template>
+
+<template name="cuerpo2">
   <div id="fullpage">
   	<div class="section" id="proyectos">
+      
+        
+      
   		<div class='vista-activa' id='proyectos-container'>
-  			<h1>Project List</h1>
         <div class='grid-layout'>
           {{proys}}
           <div id='proyectosGrid'></div>

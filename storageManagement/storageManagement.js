@@ -9,12 +9,12 @@ if (Meteor.isClient) {
 
 
   $(document).ready(function() {
-      $('#fullpage').fullpage({
+      /*$('#fullpage').fullpage({
         anchors: ['proys', 'fails', 'calc'],
         sectionsColor: ['rgb(233,233,233)', '#1BBC9B', '#7E8F7C'],
         css3: true,
         scrollOverflow: false
-      });
+      });*/
 
       $("li.menu-link").click(function(){
         $("li.active").toggleClass("active");
@@ -131,6 +131,15 @@ if (Meteor.isClient) {
       return accounting.formatMoney(date);
     });
 
+    Template.menu.events({
+      "click .projects": function(evt){
+        viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
+        console.log("VIEW ",viewVar);
+        //Session.set("projectListView", view);
+      }
+
+    });
+
   Template.cuerpo.events({
     "submit .espacio-solicitado": function (event) {
       // This function is called when the new task form is submitted
@@ -199,14 +208,80 @@ if (Meteor.isClient) {
     }
   });
 
+  Template.modalNuevo.events({
+    'click .request-submit':function(evt){
+      console.log("evt ",evt);
+      pp = $(".checks[name='pp'").is(':checked'); 
+      np = $(".checks[name='np'").is(':checked'); 
+      sp = $(".checks[name='sp'").is(':checked');
+      Session.set("newRequestOpts",{"pp":pp,"np":np,"sp":sp});
+      Blaze.remove(modalView);
+      Blaze.render(Template.newRequest, $("body").get(0));
+      
+    }
+  });
+
+  Template.newRequest.events({
+    'click .checks':function(evt){
+
+      if(!$(".checks[name='dev-ips'").is(':checked'))
+        $(".tabs-device").tabs( "disable", "#dtabs-4" );
+      else
+        $(".tabs-device").tabs( "enable", "#dtabs-4" );
+      
+      if(!$(".checks[name='dev-conf'").is(':checked'))
+        $(".tabs-device").tabs( "disable", "#dtabs-2" );
+      else
+        $(".tabs-device").tabs( "enable", "#dtabs-2" );
+        
+      if(!$(".checks[name='dev-conn'").is(':checked'))
+        $(".tabs-device").tabs( "disable", "#dtabs-5" );
+      else
+        $(".tabs-device").tabs( "enable", "#dtabs-5" );
+      
+      if(!$(".checks[name='dev-strg'").is(':checked'))
+        $(".tabs-device").tabs( "disable", "#dtabs-6" );
+      else
+        $(".tabs-device").tabs( "enable", "#dtabs-6" );
+      
+
+
+    }
+  });
+
+  Template.newRequest.onRendered(function(){
+    opts = Session.get("newRequestOpts");
+    console.log("OPTs ",opts);
+    console.log("OPT1 ",opts.pp);
+    console.log("OPT2 ",opts.sp);
+    console.log("OPT3 ",opts.np);
+    if (!opts.pp)
+      $(".tabpp").remove();
+    if (!opts.sp)
+      $(".tabsp").remove();
+    if (!opts.np)
+      $(".tabnp").remove();
+    $(".tabs").tabs();
+    $(".tabs-device").tabs();
+
+    opts =  null; 
+  });
+
+  Template.modalNuevo.onRendered(function(){
+    $(".modalProject").animate({opacity:"1"},2000);
+  });
+
   Template.cuerpo.events({
     'click .nuevo-button':function(){
-      $(".divEquipos").empty();$(".divPP").empty();$('.div-sn').empty();$(".divPC").empty();
+      console.log("viewVar ",viewVar);
+      Blaze.remove(viewVar);
+      modalView = Blaze.render(Template.modalNuevo, $("body").get(0));
+     /* $(".divEquipos").empty();$(".divPP").empty();$('.div-sn').empty();$(".divPC").empty();
       $(".hdSumDiv").hide();
       $("#proyectos-container").hide();
       //$("#nuevo-proyecto").slimscroll({ height: 'auto' });
       $("#nuevo-proyecto").show();
-      edicionProyecto=false;
+      edicionProyecto=false;*/
     },
 
     'click .editar-button':function(){
