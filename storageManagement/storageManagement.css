@@ -115,10 +115,14 @@ input, textarea{
 }
 
 .project-section{
-  width: 50%;
+  width: 100%;
   height: 75%;
   float: left;
   background-color: #E8E8E8;
+}
+
+.modalSelect{
+  width: 100%;
 }
 
 .modal-bg{
@@ -168,7 +172,7 @@ input, textarea{
 
 .projectOptions a.title{
   background-color: green;
-  width: 50%;
+  width: 100%;
   float: left;
   text-align: center;
   display: block;

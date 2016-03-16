@@ -211,17 +211,76 @@ if (Meteor.isClient) {
   Template.modalNuevo.events({
     'click .request-submit':function(evt){
       console.log("evt ",evt);
-      pp = $(".checks[name='pp'").is(':checked'); 
-      np = $(".checks[name='np'").is(':checked'); 
-      sp = $(".checks[name='sp'").is(':checked');
-      Session.set("newRequestOpts",{"pp":pp,"np":np,"sp":sp});
-      Blaze.remove(modalView);
-      Blaze.render(Template.newRequest, $("body").get(0));
       
+      if (!Session.get("startProject")) {
+
+        Session.set("startProject",true);
+        cob = $(".checks[name='cob'").is(':checked'); 
+        pp = $(".checks[name='pp'").is(':checked'); 
+        np = $(".checks[name='np'").is(':checked'); 
+        sp = $(".checks[name='sp'").is(':checked');
+        Session.set("newRequestOpts",{"cob":cob, "pp":pp,"np":np,"sp":sp});
+
+        $(".project-section.left").remove();
+        var locationDiv = '<div class="project-section left"><table class="right">'+
+          '<tr><td class="texto-tabla">Region</td><td class="texto-tabla"><select class="modalSelect" name="region"><option>Latam</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Country</td><td class="texto-tabla"><select class="modalSelect" name="country"><option>Mexico</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">City</td><td class="texto-tabla"><select class="modalSelect" name="city"><option>CDMX</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Building</td><td class="texto-tabla"><select class="modalSelect" name="building"><option>Jardines</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Floor</td><td class="texto-tabla"><select class="modalSelect" name="floor"><option>2</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Data Center</td><td class="texto-tabla"><select class="modalSelect" name="dataCenter"><option>Jardines</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Site category</td><td class="texto-tabla"><select class="modalSelect" name="category"><option>Data center</option></select></td></tr>'+
+          '</table></div>';
+        var locationDiv2 = '<div class="project-section right"><table class="right">'+
+          '<tr><td class="texto-tabla">Region</td><td class="texto-tabla"><select class="modalSelect" name="region"><option>Latam</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Country</td><td class="texto-tabla"><select class="modalSelect" name="country"><option>Mexico</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">City</td><td class="texto-tabla"><select class="modalSelect" name="city"><option>CDMX</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Building</td><td class="texto-tabla"><select class="modalSelect" name="building"><option>Jardines</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Floor</td><td class="texto-tabla"><select class="modalSelect" name="floor"><option>2</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Data Center</td><td class="texto-tabla"><select class="modalSelect" name="dataCenter"><option>Jardines</option></select></td></tr>'+
+          '<tr><td class="texto-tabla">Site category</td><td class="texto-tabla"><select class="modalSelect" name="category"><option>Data center</option></select></td></tr>'+
+          '</table></div>';
+        $(".titleDiv > .title").text("Production Location");
+        if (cob) {
+          $('<a class="title">Cob Location</a>').insertAfter(".titleDiv > .title");
+          $(locationDiv2).insertAfter(".titleDiv");
+          $(locationDiv).insertAfter(".titleDiv");
+
+          $(".project-section").css("width","50%");
+          $(".projectOptions a.title").css("width","50%");
+
+        } else {
+          $(locationDiv).insertAfter(".titleDiv");
+        }
+      } else {
+        try {
+          var resPro = Proyectos.insert({projectName:"Test"});
+          Session.set("creatingProject",true);
+          Session.set("projectNumber",resPro);
+          console.log("RESPUEPRO ",resPro);
+        } catch(err) {
+          alert("ERROR "+err);
+        }
+        Blaze.remove(modalView);
+        newRequestView = Blaze.render(Template.newRequest, $("body").get(0));
+      }
     }
   });
 
   Template.newRequest.events({
+    'click .back': function(evt){
+      if(confirm("Dismiss project?")){
+        Session.set("creatingProject");
+        try {
+          Proyectos.remove({_id:Session.get("projectNumber")});
+          Blaze.remove(newRequestView);
+          viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
+        } catch (err){
+          alert("Oops, Something went wrong!");
+        }
+      }
+    },
+
     'click .checks':function(evt){
 
       if(!$(".checks[name='dev-ips'").is(':checked'))
@@ -244,9 +303,105 @@ if (Meteor.isClient) {
       else
         $(".tabs-device").tabs( "enable", "#dtabs-6" );
       
+    },
+    'click .addDevice':function(evt){
+      
+      var idProy = Session.get("projectNumber");
+      var newDevice = {project:idProy};
 
+      newDevice.devFamily = $(".devFamily").val();
+      newDevice.devModel = $(".devModel").val();
+      newDevice.devSite = $(".devSite").val();
+      newDevice.devTipo = $(".tipoEq").val();
+      newDevice.devName = $(".nombreEq").val();
+      newDevice.devSerial = $(".snEq").val();
+      newDevice.devAperture = $(".apertureEq").val();
+      newDevice.devInvoice = $(".invoiceEq").val();
+      newDevice.devCoord = $(".coorEq").val();
+      newDevice.devServReq = $(".srEq").val();
+      newDevice.devNotes = $(".notesEq").val();
+      newDevice.devMicro = $(".devMC").val();
+      newDevice.devCate = $(".devCate").val();
+      newDevice.devQuantPC = $(".quantityPC").val();
+      newDevice.devConnTypePC = $(".connectorTypePC").val();
+      newDevice.devPhasePC = $(".fasesPC").val();
+      newDevice.devVoltPC = $(".voltajePC").val();
 
+      var power =[];
+      $.each($(".lineaPP"), function(){
+        var pp = {
+          quantityPP: $(".quantityPP", $(this)).val(),
+          connectorTypePP: $(".connectorTypePP", $(this)).val(),
+          fasesPP: $(".fasesPP", $(this)).val(),
+          voltajePP: $(".voltajePP", $(this)).val()
+        };
+        power.push(pp);
+      });
+      newDevice.power = power;
+
+      var ips =[];
+      $.each($(".devSubnet"), function(){
+        var ip = {
+          devSubnet: $(".devSubnet", $(this)).val(),
+          devIP: $(".devIP", $(this)).val(),
+          devMask: $(".devMask", $(this)).val(),
+          devGateway: $(".devGateway", $(this)).val(),
+          devDns: $(".devDns", $(this)).val()
+        };
+        ips.push(ip);
+      });
+      newDevice.ips = ips;
+
+      var cabling =[];
+      $.each($(".lineaPC"), function(){
+        var cable = {
+          quantityPC: $(".quantityPC", $(this)).val(),
+          connTypePC: $(".connTypePC", $(this)).val(),
+          cableTypePC: $(".cableTypePC", $(this)).val(),
+          speedPC: $(".speedPC", $(this)).val(),
+          lengthPC: $(".lengthPC", $(this)).val()
+        };
+        cabling.push(cable);
+      });
+      newDevice.cabling = cabling;
+
+      var strg =[];
+      $.each($(".lineaStrg"), function(){
+        var st = {
+          quantDisk: $(".quantDisk", $(this)).val(),
+          typeDisk: $(".typeDisk", $(this)).val(),
+          capDisk: $(".capDisk", $(this)).val(),
+          raidDisk: $(".raidDisk", $(this)).val()
+        };
+        strg.push(st);
+      });
+      newDevice.storage = strg;
+
+      try {
+        Equipos.insert(newDevice);
+        var listEquipos = Equipos.find({project:Session.get("projectNumber")}).fetch();
+        console.log("kekek ",listEquipos);
+        var source ={
+          datatype: "json",
+          datafields: [
+            { name: '_id', type: 'string' },
+            { name: 'devName', type: 'string' },
+            { name: 'devFamily', type: 'string' },
+            { name: 'devModel', type: 'string' },
+            { name: 'devTipo', type: 'string' },
+            { name: 'devSite', type: 'string' }
+          ],
+          localdata: listEquipos
+        };
+        var dataAdapterDev = new $.jqx.dataAdapter(source);
+
+        $(".deviceTable").jqxGrid({source:dataAdapterDev});
+      } catch(err) {
+        alert("ERROR "+err);
+      }
     }
+
+
   });
 
   Template.newRequest.onRendered(function(){
@@ -255,20 +410,144 @@ if (Meteor.isClient) {
     console.log("OPT1 ",opts.pp);
     console.log("OPT2 ",opts.sp);
     console.log("OPT3 ",opts.np);
-    if (!opts.pp)
-      $(".tabpp").remove();
-    if (!opts.sp)
-      $(".tabsp").remove();
-    if (!opts.np)
-      $(".tabnp").remove();
+
+
+      
     $(".tabs").tabs();
     $(".tabs-device").tabs();
 
+    if (!opts.np)
+        $(".tabs-device").tabs( "disable", "#dtabs-4" );
+        
+    if (!opts.pp)
+        $(".tabs-device").tabs( "disable", "#dtabs-3" );
+
+    if (!opts.sp)
+        $(".tabs-device").tabs( "disable", "#dtabs-6" );
+      
+
+    var listEquipos = Equipos.find({project:Session.get("projectNumber")}).fetch();
+        console.log("kekek ",listEquipos);
+        var source ={
+          datatype: "json",
+          datafields: [
+            { name: '_id', type: 'string' },
+            { name: 'devName', type: 'string' },
+            { name: 'devFamily', type: 'string' },
+            { name: 'devModel', type: 'string' },
+            { name: 'devTipo', type: 'string' },
+            { name: 'devSite', type: 'string' }
+          ],
+          localdata: listEquipos
+        };
+    var dataAdapterDev = new $.jqx.dataAdapter(source);
+        
+
+    $(".deviceTable").jqxGrid({
+      width: '80%',
+      source: dataAdapterDev,                
+      pageable: true,
+      autoheight: true,
+      filterable: true,
+      //sortable: true,
+      //altrows: true,
+      enabletooltips: true,
+      editable: false,
+      //selectionmode: 'multiplecellsadvanced',
+      columns: [
+        { text: 'ID', datafield: '_id', width: 250, hidden:true },
+        { text: 'NAME', datafield: 'devName', cellsalign: 'right', align: 'right', width: 200 },
+        { text: 'FAMILY', datafield: 'devFamily', align: 'right', cellsalign: 'right', cellsformat: 'c2', width: 200 },
+        { text: 'MODEL', datafield: 'devModel', cellsalign: 'right', width: 100 },
+        { text: 'TIPO', datafield: 'devTipo' },
+        { text: 'SITE', datafield: 'devSite', width: 200 }
+      ]
+    });
+
+    $(".deviceTable").on('rowselect', function (event) {
+      console.log("EVTS ",event.args);
+      var dataEq = Equipos.find({_id:event.args.row._id}).fetch()[0];
+      $(".devFamily").val(dataEq.devFamily);
+      $(".devModel").val(dataEq.devModel);
+      $(".devSite").val(dataEq.devSite);
+      $(".tipoEq").val(dataEq.devTipo);
+      $(".nombreEq").val(dataEq.devName);
+      $(".snEq").val(dataEq.devSerial);
+      $(".apertureEq").val(dataEq.devAperture);
+      $(".invoiceEq").val(dataEq.devInvoice);
+      $(".coorEq").val(dataEq.devCoord);
+      $(".srEq").val(dataEq.devServReq);
+      $(".notesEq").val(dataEq.devNotes);
+      $(".devMC").val(dataEq.devMicro);
+      $(".devCate").val(dataEq.devCate);
+      $(".quantityPC").val(dataEq.devQuantPC);
+      $(".connectorTypePC").val(dataEq.devConnTypePC);
+      $(".fasesPC").val(dataEq.devPhasePC);
+      $(".voltajePC").val(dataEq.devVoltPC);
+
+      $.each(dataEq.power, function(){
+
+          $(".quantityPP").val(this.quantityPP);
+          $(".connectorTypePP").val(this.connectorTypePP);
+          $(".fasesPP").val(this.fasesPP);
+          $(".voltajePP").val(this.voltajePP);
+        
+      });
+
+      $.each(dataEq.ips, function(){
+        
+          $(".devSubnet").val(this.devSubnet);
+          $(".devIP").val(this.devIP);
+          $(".devMask").val(this.devMask);
+          $(".devGateway").val(this.devGateway);
+          $(".devDns").val(this.devDns);
+        
+      });
+
+      $.each(dataEq.cabling, function(){
+
+          $(".quantityPC").val(this.quantityPC);
+          $(".connTypePC").val(this.connTypePC);
+          $(".cableTypePC").val(this.cableTypePC);
+          $(".speedPC").val(this.speedPC);
+          $(".lengthPC").val(this.lengthPC);
+        
+      });
+      
+      $.each(dataEq.storage, function(){
+
+          $(".quantDisk").val(this.quantDisk);
+          $(".typeDisk").val(this.typeDisk);
+          $(".capDisk").val(this.capDisk);
+          $(".raidDisk").val(this.raidDisk);
+
+      });
+
+    });
+    
     opts =  null; 
   });
 
   Template.modalNuevo.onRendered(function(){
     $(".modalProject").animate({opacity:"1"},2000);
+  });
+
+  Template.header.events({
+    'click #headerLogo': function(){
+      if (Session.get("creatingProject")) {
+        if(confirm("Dismiss project?")){
+          Session.set("creatingProject");
+          try {
+            Proyectos.remove({_id:Session.get("projectNumber")});
+            Blaze.remove(newRequestView);
+          } catch (err){
+            alert("Oops, Something went wrong!");
+          }
+        }
+      } else {
+        Blaze.remove(viewVar);
+      }
+    }
   });
 
   Template.cuerpo.events({
