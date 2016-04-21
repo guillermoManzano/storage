@@ -170,6 +170,26 @@ input, textarea{
 }
 */
 
+/*TIMELINE    #FF5151; */
+.timediv{
+  height: auto !important;
+}
+
+.timetable{
+  width: 100%;
+}
+
+.timetable tr td{
+  width: 15%;
+  text-align: center;
+  padding: 5px 0;
+}
+
+.timetable tr td:first-child{
+  text-align: left;
+  width: 25%;
+}
+
 .projectOptions a.title{
   background-color: green;
   width: 100%;
@@ -261,6 +281,10 @@ input.valor-campo{
 
 .contenedor-device{
   padding-top: 20px;
+}
+
+.checks-time{
+  margin: 0 20px;
 }
 
 .checks{
@@ -526,7 +550,7 @@ select{
 
 textarea{
 	display: block;
-  float: left;
+  /*float: left;*/
 }
 
 .hwSummary{

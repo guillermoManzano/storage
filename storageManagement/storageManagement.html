@@ -52,6 +52,8 @@
             <input class="valor-campo" type="text" name="installReason"/>
             <a class="texto-campo">Project comments</a>
             <input class="valor-campo" type="text" name="projectComments"/>
+            <a class="texto-campo">Start date</a>
+            <input class="valor-campo stDate" type="text" name="startDate"/>
           </div>
           <div class="lineaCampos">
             <a class="texto-campo">PO</a>
@@ -72,6 +74,9 @@
     <div class="seccion-plantilla tabs">
       <ul>
         <li><a href="#tabs-1">Devices</a></li>
+        <li><a href="#tabs-2">Timeline</a></li>
+        <li><a href="#tabs-3">Engineers</a></li>
+        <li><a href="#tabs-4">Change</a></li>
         <!--<li class="tabsp"><a href="#tabs-2">Space Assignment</a></li>
         <li><a href="#tabs-3">Configuration</a></li>
         <li class="tabpp"><a href="#tabs-4">Power</a></li>
@@ -173,6 +178,30 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="tabs-2">
+        <p class='remaining-days'>83 days remaining</p>
+        <div class="accordion_timeline">
+          
+        </div>
+      </div>
+      <div id="tabs-3">
+        <br>
+        <p class='texto-campo'>Assigned Human Resources</p>
+        <select class='human-resource'>
+          <option>JORGE ALFAN FOMBON</option>
+          <option>RAMON ALBERTO TRIAY ESPINOSA</option>
+          <option>JUAN CARLOS MACHUCA CAZARES</option>
+          <option>ALONSO MARIN</option>
+          <option>MICHELLE SALAZAR</option>
+          <option>ROSARIO MONROY</option>
+        </select>
+        <div class='div-btn agregar-recurso'>Agregar</div>
+        <textarea class='human-resources valor-campo' rows='10' cols='  50'></textarea>
+      </div>
+      <div id="tabs-4">
+        <a class='texto-campo'>Change</a><input class='valor-campo' type='text'/>
+        <a class='texto-campo'>Status</a><select class='change-select' ><option>Approved</option><option>Pending</option><option>Rejected</option></select>
       </div>
       <!--<div id="tabs-2" class="tabsp">
         <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>

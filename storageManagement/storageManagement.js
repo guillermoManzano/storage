@@ -2,6 +2,8 @@ Proyectos = new Mongo.Collection("proyectos");
 Equipos = new Mongo.Collection("equipos");
 Tiers = new Mongo.Collection("tiers");
 Discos = new Mongo.Collection("discos");  
+Activities = new Mongo.Collection("activities");
+Phases = new Mongo.Collection("phases");
 
 if (Meteor.isClient) {
   // counter starts at 0
@@ -92,6 +94,8 @@ if (Meteor.isClient) {
                   { text: 'SITE', datafield: 'site', width: 200 }
                 ]
             });
+
+
         $('.fechaCompromiso').datepicker({"dateFormat": "dd/mm/yy"});
         //$(".fechaCompromiso").datepicker( "option", "dateFormat", "dd/mm/yyyy");
   });
@@ -268,7 +272,7 @@ if (Meteor.isClient) {
   });
 
   Template.newRequest.events({
-    'click .back': function(evt){
+    'click .back': function(evt){ 
       if(confirm("Dismiss project?")){
         Session.set("creatingProject");
         try {
@@ -278,6 +282,12 @@ if (Meteor.isClient) {
         } catch (err){
           alert("Oops, Something went wrong!");
         }
+      }
+    },
+
+    'click .agregar-recurso':function(){
+      if ($('.human-resources').val().indexOf($('.human-resource').val()) == -1){
+        $('.human-resources').append($('.human-resource').val()+"\n");
       }
     },
 
@@ -411,6 +421,25 @@ if (Meteor.isClient) {
     console.log("OPT2 ",opts.sp);
     console.log("OPT3 ",opts.np);
 
+    var listPhases = Phases.find({},{sort:{order:1}}).fetch();
+    var listActivities = Activities.find({}, {sort:{id:1}}).fetch();
+
+    var divFase = "";
+    $.each(listPhases, function(x,obj){
+      divFase += "<h3 class='time-title'>"+obj.phaseName+" - 6 days remaining</h3><div class='timediv'><table class='timetable'><tr><th>Activity</th><th>Days</th><th>Responsable</th><th>Status</th><th>Estimated date</th><th>Accomplished date</th></tr>";
+      var actividadesFase = $.grep(listActivities, function(a,b){
+        return a.phase == obj.id;
+      });
+      console.log("FASE "+obj.id+" - ",actividadesFase);
+      $.each(actividadesFase, function(y, act){
+        divFase += "<tr><td>"+act.actName+"</td><td>"+act.time+"</td><td><select><option>Michel</option><option>Alfredo</option></select></td><td><input class='checks checks-time' type='checkbox'/></td><td class='estimated-time'>15 Aprl 2016</td><td class='real-time'>15 Aprl 2016</td></tr>";
+      });
+      divFase += "</table></div>";
+    });
+    $(".accordion_timeline").append(divFase);
+
+    $('.stDate').datepicker({"dateFormat": "dd/mm/yy"});
+    $(".accordion_timeline").accordion();
 
       
     $(".tabs").tabs();
