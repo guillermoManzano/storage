@@ -8,7 +8,23 @@ formatoFecha = function(fecha){
     if (day.length < 2) day = '0' + day;
 
     return [day, month, year].join('/');
+}
 
+formatoFechaLargo = function(fecha){
+    var day=fecha.getDay();
+    var month=fecha.getMonth();
+    var daym=fecha.getDate();
+    var year = fecha.getFullYear();
+    
+    if (daym<10)
+        daym="0"+daym
+        
+    var dayarray=new Array("Sunday","Monday","Tuesday","Wednesday","Thursday",
+                            "Friday","Saturday")
+    var montharray=new Array("January","February","March","April","May","June",
+                            "July","August","September","October","November","December")
+    
+    return dayarray[day]+", "+montharray[month]+" "+daym+", "+year;
 }
 
 actualizaGrid = function(){
@@ -27,6 +43,53 @@ actualizaGrid = function(){
         };
     var dt = new $.jqx.dataAdapter(src);
 	$("#proyectosGrid").jqxGrid({source: dt})
+}
+
+calculaDiasFase = function(){
+    $.each($(".timediv"), function(){
+        var fila = $(this);
+        var dias = 0;
+        $.each($(".trAct",fila),function(){
+            dias += parseInt($($("td",$(this))[2]).text());
+        });
+        fila.prev(".time-title").text(+dias+" days remaining");
+    });
+}
+
+actualizaTimeline = function(stDate){
+
+    var listActivities = Activities.find({}, {sort:{id:1}}).fetch();
+
+    var fechaaTarea = stDate;
+    $.each($(".timediv"), function(){
+        var fila = $(this);
+        fila.prev(".time-title");
+        $.each($(".trAct",fila),function(){
+            var dias = 86400000*parseInt($($("td",$(this))[2]).text());
+            var idAct = parseInt($($("td",$(this))[0]).text());
+            var estimated = dias+fechaaTarea;
+            var actRes = $(".actResponsable",$($("td",$(this))[3])).val();
+            fechaTarea = estimated;
+            //console.log("fecha ",fechaTarea);
+            var actDep = $.grep(listActivities, function(a){a.id == idAct});
+            var tiempoDependencia = 0;
+            if (actDep.dependecy && actDep.dependecy.length > 0){
+                $.each(actDep.dependency, function(){
+                    var dependencia = $.grep(listActivities, function(a){a.id == this});
+                    tiempoDependencia += dependencia.time;
+                });
+            }
+            if (tiempoDependencia > 0){
+                estimated += 86400000*tiempoDependencia;
+            }
+
+            Status.insert({project:Session.get("projectNumber"), activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
+
+            $($("td",$(this))[5]).text(formatoFechaLargo(new Date(estimated)));
+            $($("td",$(this))[5]).data({"estimated":new Date(estimated).getTime()});
+            fechaaTarea = estimated;
+        });
+    });
 }
   
 editarProyecto = function(proyecto){

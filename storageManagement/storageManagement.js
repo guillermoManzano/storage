@@ -4,6 +4,7 @@ Tiers = new Mongo.Collection("tiers");
 Discos = new Mongo.Collection("discos");  
 Activities = new Mongo.Collection("activities");
 Phases = new Mongo.Collection("phases");
+Status = new Mongo.Collection("status");
 
 if (Meteor.isClient) {
   // counter starts at 0
@@ -272,6 +273,62 @@ if (Meteor.isClient) {
   });
 
   Template.newRequest.events({
+    'click .notesActivity': function(evt){
+
+    },
+
+    'click .checks-time': function(evt){
+      console.log("---- ",$(evt.target));
+      if ($(".stDate").val() == undefined || $(".stDate").val() == ""){
+        $(evt.target).prop("checked",false);
+        alert("Select project start date.");
+      } else {
+        var actStatus = $(evt.target).prop("checked");
+        var actId = parseInt($(evt.target).parent().siblings(".actid").text());
+        var actRes = $(evt.target).parent().prev("td").children(".actResponsable").val();
+        var accomplished = new Date(new Date().setHours(0,0,0,0));
+        $(evt.target).parent().parent();
+        var statusEx = Status.find({project:Session.get("projectNumber"), "activity":actId}).fetch();
+        if (statusEx.length < 1){
+console.log("ac "+actId+" - ",statusEx);
+          try {
+
+            Status.insert({project:Session.get("projectNumber"), activity:actId, status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()});
+            $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
+            var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
+            if (est < accomplished.getTime()){
+              $(evt.target).parent().parent().css({"background-color":"red"});
+            }else if (est > accomplished.getTime()){
+              $(evt.target).parent().parent().css({"background-color":"green"});
+            }
+          } catch(err){
+            console.log("ERROR ",err);
+          }
+        } else {
+          try {
+            console.log("else ",statusEx[0]);
+            var fechaStatus = statusEx[0].fechaEst;
+            if (!actStatus)
+              fechaStatus = "";
+            $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
+            var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
+            if (est < accomplished.getTime()){
+              $(evt.target).parent().parent().css({"background-color":"red"});
+            }else if (est > accomplished.getTime()){
+              $(evt.target).parent().parent().css({"background-color":"green"});
+            }
+            Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
+          }catch(err){
+            console.log("ERROR ",err);
+          }
+        }
+      }
+    },
+
+    'click .stDate':function(evt){
+
+    },
+
     'click .back': function(evt){ 
       if(confirm("Dismiss project?")){
         Session.set("creatingProject");
@@ -426,20 +483,48 @@ if (Meteor.isClient) {
 
     var divFase = "";
     $.each(listPhases, function(x,obj){
-      divFase += "<h3 class='time-title'>"+obj.phaseName+" - 6 days remaining</h3><div class='timediv'><table class='timetable'><tr><th>Activity</th><th>Days</th><th>Responsable</th><th>Status</th><th>Estimated date</th><th>Accomplished date</th></tr>";
+      divFase += "<h3 class='time-title'>"+obj.phaseName+"</h3><div class='timediv'><table class='timetable'><tr><th>Activity</th><th>Days</th><th>Responsable</th><th>Status</th><th>Estimated date</th><th>Accomplished date</th><th>Notes</th></tr>";
       var actividadesFase = $.grep(listActivities, function(a,b){
         return a.phase == obj.id;
       });
-      console.log("FASE "+obj.id+" - ",actividadesFase);
+
       $.each(actividadesFase, function(y, act){
-        divFase += "<tr><td>"+act.actName+"</td><td>"+act.time+"</td><td><select><option>Michel</option><option>Alfredo</option></select></td><td><input class='checks checks-time' type='checkbox'/></td><td class='estimated-time'>15 Aprl 2016</td><td class='real-time'>15 Aprl 2016</td></tr>";
+        if (act.dependency && act.dependency.length > 0){
+
+        }
+        divFase += "<tr class='trAct'><td class='actid' style='display:none;'>"+act.id+"</td><td>"+act.actName+"</td><td>"+act.time+"</td><td><select class='actResponsable'><option>Michel</option><option>Alfredo</option></select></td><td><input class='checks checks-time' type='checkbox'/></td><td class='estimated-time'></td><td class='real-time'></td><td><textarea class='notesActivity'></textarea></td></tr>";
       });
       divFase += "</table></div>";
     });
     $(".accordion_timeline").append(divFase);
-
-    $('.stDate').datepicker({"dateFormat": "dd/mm/yy"});
+    
+    $('.stDate').datepicker({
+      "dateFormat": "dd/mm/yy",
+      
+      onSelect: function(dateText) {
+        console.log("Selected date: " + dateText + "; input's current value: " + this.value);
+        var projectStart = $(".stDate").datepicker("getDate").getTime();
+        actualizaTimeline(projectStart);
+      }
+    });
     $(".accordion_timeline").accordion();
+
+    $('.notesActivity').on({
+      "click": function() {
+        console.log("CLICK( ",$(this));
+        if ($(this).val().trim() != "") {
+          console.log("entro( ",$(this).val());
+          $(this).tooltip({ items: ".notesActivity", content: $(this).val()});
+          console.log("open ");
+          $(this).tooltip("open");
+        }
+      },
+      "mouseout": function() {      
+        if ($(this).val().trim() != "") {
+          $(this).tooltip("disable");   
+        }
+      }
+    });
 
       
     $(".tabs").tabs();
