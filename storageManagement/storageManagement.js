@@ -27,8 +27,8 @@ if (Meteor.isClient) {
       edicionProyecto=false;
       proyects=[
       {
-        id:'2015QRDC100',
-        name:'upgrd vnx',
+        id:'2015QRDC100ljao ds asd',
+        name:'upgrd vnxai diajd lija idj li aildj',
         equipo:'AVAMAR',
         fechaInicio:'16/10/2015',
         fechaCompromiso:'26/10/2015',
