@@ -3,8 +3,16 @@
 </head>
 
 <body>
-  {{> header}}
-  {{> menu}}
+  
+ <div id="header">
+  <div id="headerLogoContainer"><img id="headerLogo" src="/citi.png"/></div>
+  {{> loginButtons}}
+ </div>
+
+ {{#if currentUser}}
+    {{> header}}
+    {{> menu}}
+ {{/if}}
 
 </body>
 
@@ -16,8 +24,24 @@
       <li class="menu-link" data-menuanchor="fails"><a href="#fallas">FALLAS</a></li>
       <li class="menu-link" data-menuanchor="calc"><a href="#calculador">CALCULADOR</a></li>
     </ul>
+    <div id="login">
+      <p>{{currentUser.username}}</p>
+      {{#if isInRole 'Administrador'}}
+        <p>Administrador</p>
+      {{else}}
+        {{#if isInRole 'Projects'}}
+          <p>Projects</p>
+          {{else}}
+            {{#if isInRole 'Break & Fix'}}
+              <p>Break & Fix</p>
+            {{/if}}  
+        {{/if}}
+      {{/if}}
+      <p><a class="logout" href="logout">Logout</a></p>
+    </div>
   </div>
 </template>
+
 <template name="menu">
   <ul id="navigationMenu">
     <li>
@@ -25,16 +49,27 @@
         <span>Home</span>
       </a>
     </li>
+    {{#if isInRole 'Projects'}}
     <li>
       <a class="projects" href="#">
         <span>Projects</span>
       </a>
     </li>
+    {{/if}}
+    {{#if isInRole 'Break & Fix'}}
     <li>
       <a class="breakfix" href="#">
         <span>Break & fix</span>
       </a>
     </li>
+    {{/if}}
+    {{#if isInRole 'Administrador'}}
+    <li>
+      <a class="addUser" href="#">
+        <span>Add User</span>
+      </a>
+    </li>
+    {{/if}}
   </ul>
 </template>
 
@@ -282,9 +317,11 @@
           {{proys}}
           <div id='proyectosGrid'></div>
         </div>
+         {{#if isInRole 'Write'}}
         <div class='action-buttons'>
           <p><input type="submit" value="Nuevo" class="nuevo-button boton"></p>
         </div>
+        {{/if}}
       </div>
 </template>
 
@@ -611,5 +648,33 @@
     <div class="disco-col usable">{{usable}}</div>
     <div class="disco-col precio">{{formatMoney precio}}</div>
     <div class="disco-col">{{formatMoney precioGB}}</div>
+  </div>
+</template>
+
+<template name="agregarUsuario">
+  <div id='login-container'>   
+      <form class="agregarUser">
+        <input class="log" type="text" name="username" placeholder="User">
+        <input class="log" type="text" name="email" placeholder="example@example.com">
+        <input class="log" type="password" name="password" placeholder="*******">
+       <hr>
+       Enterprise
+        <select name="profile">
+          <option>Banamex</option>
+          <option>EMC</option>
+        </select><br>
+        <hr>
+        <label>Roles</label><br><br>
+        <input type="checkbox" name="administrador" class= "administrador"> Administrador<br>
+        <input type="checkbox" name="breakFix"> Break & Fix<br>
+        <input type="checkbox" name="project"> Project<br>
+
+        <hr>
+        <label>Permissions</label><br><br>
+        <input type="checkbox" name="read" class= "read"> Read Only<br>
+        <input type="checkbox" name="write"> Write Only<br>
+
+        <input type="submit" value="Add user" class="add_user">
+      </form>
   </div>
 </template>
