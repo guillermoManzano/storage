@@ -12,3 +12,6 @@ rochal:slimscroll
 insecure
 jquery
 mrt:jquery-ui-bootstrap
+accounts-password
+accounts-ui-unstyled
+alanning:roles
