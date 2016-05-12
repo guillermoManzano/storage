@@ -83,7 +83,8 @@ actualizaTimeline = function(stDate){
                 estimated += 86400000*tiempoDependencia;
             }
 
-            Status.insert({project:Session.get("projectNumber"), activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
+            if (!edicionProyecto)
+                Status.insert({project:Session.get("projectNumber"), activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
 
             $($("td",$(this))[5]).text(formatoFechaLargo(new Date(estimated)));
             $($("td",$(this))[5]).data({"estimated":new Date(estimated).getTime()});

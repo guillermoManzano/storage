@@ -308,6 +308,7 @@ if (Meteor.isClient) {
             $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
               //fechaStatus = "";
             if (!actStatus){
+              $(evt.target).parent().siblings(".real-time").text("");
               $(evt.target).parent().parent().css({"background-color":"white"});
               Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes}});
               Status.update(statusEx[0]["_id"],{$unset:{fechaAccomp:{$exists:true}}});
@@ -337,6 +338,7 @@ if (Meteor.isClient) {
         Session.set("creatingProject");
         try {
           Proyectos.remove({_id:Session.get("projectNumber")});
+          edicionProyecto = false;
           Blaze.remove(newRequestView);
           viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
         } catch (err){
