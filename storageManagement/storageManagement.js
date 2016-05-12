@@ -63,6 +63,7 @@ if (Meteor.isClient) {
         var source ={
           datatype: "json",
           datafields: [
+            { name: '_id', type: 'string' },
             { name: 'id', type: 'string' },
             { name: 'projectName', type: 'string' },
             { name: 'equipo', type: 'string' },
@@ -87,6 +88,7 @@ if (Meteor.isClient) {
                 editable: false,
                 //selectionmode: 'multiplecellsadvanced',
                 columns: [
+                  { text: 'PRID', datafield: '_id', hidden:true},
                   { text: 'ID', datafield: 'id', width: 250 },
                   { text: 'NAME', datafield: 'projectName', cellsalign: 'right', align: 'right', width: 200 },
                   { text: 'EQUIPMENT', datafield: 'equipo', align: 'right', cellsalign: 'right', cellsformat: 'c2', width: 200 },
@@ -215,8 +217,6 @@ if (Meteor.isClient) {
 
   Template.modalNuevo.events({
     'click .request-submit':function(evt){
-      console.log("evt ",evt);
-      
       if (!Session.get("startProject")) {
 
         Session.set("startProject",true);
@@ -259,7 +259,7 @@ if (Meteor.isClient) {
         }
       } else {
         try {
-          var resPro = Proyectos.insert({projectName:"Test"});
+          var resPro = Proyectos.insert({projectName:"Test2", "opts":Session.get("newRequestOpts")});
           Session.set("creatingProject",true);
           Session.set("projectNumber",resPro);
           console.log("RESPUEPRO ",resPro);
@@ -278,7 +278,6 @@ if (Meteor.isClient) {
     },
 
     'click .checks-time': function(evt){
-      console.log("---- ",$(evt.target));
       if ($(".stDate").val() == undefined || $(".stDate").val() == ""){
         $(evt.target).prop("checked",false);
         alert("Select project start date.");
@@ -290,7 +289,6 @@ if (Meteor.isClient) {
         $(evt.target).parent().parent();
         var statusEx = Status.find({project:Session.get("projectNumber"), "activity":actId}).fetch();
         if (statusEx.length < 1){
-console.log("ac "+actId+" - ",statusEx);
           try {
 
             Status.insert({project:Session.get("projectNumber"), activity:actId, status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()});
@@ -302,30 +300,35 @@ console.log("ac "+actId+" - ",statusEx);
               $(evt.target).parent().parent().css({"background-color":"green"});
             }
           } catch(err){
-            console.log("ERROR ",err);
+            console.log("ERROR INSERT STATUS",err);
           }
         } else {
           try {
-            console.log("else ",statusEx[0]);
             var fechaStatus = statusEx[0].fechaEst;
-            if (!actStatus)
-              fechaStatus = "";
             $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
-            var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
-            if (est < accomplished.getTime()){
-              $(evt.target).parent().parent().css({"background-color":"red"});
-            }else if (est > accomplished.getTime()){
-              $(evt.target).parent().parent().css({"background-color":"green"});
+              //fechaStatus = "";
+            if (!actStatus){
+              $(evt.target).parent().parent().css({"background-color":"white"});
+              Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes}});
+              Status.update(statusEx[0]["_id"],{$unset:{fechaAccomp:{$exists:true}}});
+            } else {
+              var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
+              if (est < accomplished.getTime()){
+                $(evt.target).parent().parent().css({"background-color":"red"});
+              }else if (est > accomplished.getTime()){
+                $(evt.target).parent().parent().css({"background-color":"green"});
+              }
+              Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
             }
-            Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
           }catch(err){
-            console.log("ERROR ",err);
+            console.log("ERROR EDIT STATUS",err);
           }
         }
       }
     },
 
-    'click .stDate':function(evt){
+    'change .stDate':function(evt){
+      /*REMOVE*/
 
     },
 
@@ -504,6 +507,7 @@ console.log("ac "+actId+" - ",statusEx);
       onSelect: function(dateText) {
         console.log("Selected date: " + dateText + "; input's current value: " + this.value);
         var projectStart = $(".stDate").datepicker("getDate").getTime();
+        Proyectos.update(Session.get("projectNumber"),{$set:{"fechaInicio":projectStart}});
         actualizaTimeline(projectStart);
       }
     });
@@ -522,6 +526,15 @@ console.log("ac "+actId+" - ",statusEx);
       "mouseout": function() {      
         if ($(this).val().trim() != "") {
           $(this).tooltip("disable");   
+        }
+      },
+      "change":function(){
+        var actid = parseInt($(this).parent().siblings(".actid").text());
+        var reg = Status.find({project:Session.get("projectNumber"), "activity":actid}).fetch();
+        try {
+          Status.update(reg[0]["_id"],{$set:{notes:$(this).val().trim()}});
+        }catch(err){
+          console.log("Update notes status: ",err);
         }
       }
     });
@@ -638,7 +651,10 @@ console.log("ac "+actId+" - ",statusEx);
       });
 
     });
-    
+    if (edicionProyecto){
+      var edit = Proyectos.find({_id:Session.get("projectNumber")}).fetch();
+      editarProyecto(edit[0]);
+    }
     opts =  null; 
   });
 
@@ -678,18 +694,26 @@ console.log("ac "+actId+" - ",statusEx);
     },
 
     'click .editar-button':function(){
-      $(".divEquipos").empty();$(".divPP").empty();$('.div-sn').empty();$(".divPC").empty();
-      edicionProyecto=true;
+      Session.set("creatingProject",true);
       var rowId = $("#proyectosGrid").jqxGrid('getselectedrowindex');
       
-      var proyId = $("#proyectosGrid").jqxGrid('getrowdatabyid',rowId).id
-      var proyecto = Proyectos.find({id:proyId}).fetch();
+      var proyId = $("#proyectosGrid").jqxGrid('getrowdatabyid',rowId)._id
+      var proyecto = Proyectos.find({_id:proyId}).fetch();
+      Blaze.remove(viewVar);
+      console.log("EDIT PROY ",proyecto);
+      Session.set("projectNumber",proyecto[0]["_id"]);
+      Session.set("newRequestOpts",proyecto[0].opts);
+      newRequestView = Blaze.render(Template.newRequest, $("body").get(0));
+      edicionProyecto=true;
+      //editarProyecto(proyecto[0]);
+
+
+      /*$(".divEquipos").empty();$(".divPP").empty();$('.div-sn').empty();$(".divPC").empty();
       
-      editarProyecto(proyecto[0]);
       $("#proyectos-container").hide();
       //$("#nuevo-proyecto").slimscroll({ height: 'auto' });
       $(".hdSumDiv").show();
-      $("#nuevo-proyecto").show();
+      $("#nuevo-proyecto").show();*/
     },
 
     'click .volver-proyectos':function(){

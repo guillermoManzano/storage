@@ -91,16 +91,48 @@ actualizaTimeline = function(stDate){
         });
     });
 }
+
+edicionStatus = function(){
+    
+    var listStatus = Status.find({project:Session.get("projectNumber"), fechaAccomp:{$exists:true}}).fetch();
+    
+    if (listStatus && listStatus.length > 0) {
+        $.each(listStatus, function(ls, act){
+            var task = $(".actid").filter(function() {
+                return $(this).text() === ""+act.activity;
+            });
+            if (this.status){
+                $(".checks-time", $(task).parent()).prop("checked",true);
+                $(".real-time", $(task).parent()).text(formatoFechaLargo(new Date(this.fechaAccomp)));
+            }
+            
+            if (task.length > 0){
+                if (this.notes){
+                    $(".notesActivity", $(task).parent()).text(this.notes);
+                }
+                if (this.fechaEst < this.fechaAccomp)
+                    $(task).parent().css({"background-color":"red"});
+                else if (this.fechaAccomp < this.fechaEst){
+                    $(task).parent().css({"background-color":"green"});
+                }
+            }
+        });
+    }
+}
   
 editarProyecto = function(proyecto){
-    console.log("PROYECTO ",proyecto);
-    $(".id_").val(proyecto._id);
+    
     if (proyecto.projectName)
         $(".projectName").val(proyecto.projectName);
     if (proyecto.proyectManager)
         $(".proyectManager").val(proyecto.proyectManager);
     if (proyecto.plataforma)
         $(".plataforma").val(proyecto.plataforma);
+    if (proyecto.fechaInicio) {
+        $(".stDate").datepicker("setDate",proyecto.fechaInicio);
+        actualizaTimeline(proyecto.fechaInicio);
+        edicionStatus();
+    }
     if (proyecto.equipo)
         $(".equipo").val(proyecto.equipo);
     if (proyecto.tipoProyecto)
