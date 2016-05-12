@@ -89,6 +89,121 @@ input, textarea{
 	height: 75%;
 }
 
+/*Agrego Memo para el logo de la primera vista*/
+/*----------------------*/
+
+#login-buttons{
+  position: relative;
+  color: #fff;
+  width: 50%;
+  margin: 0 auto;
+  padding: 10px;
+  top: 200px;
+  border:solid 1px;
+  border-color: #ddd;
+  background-color: #eee;
+  font-size: 25px;  
+  font-family:  bebas, Roboto, sans-serif;
+}
+
+#login-buttons label{ color: #333; font-size: 25px; display: block;}
+
+#login-buttons input{
+
+  margin: 5px;
+  background-color: #fff;
+  color: #000;
+  font-family: sans-serif;
+  margin-bottom: 10px;
+}
+
+#login-buttons .login-link-text { display: none;}
+#login-buttons .additional-link-container { display: none;}
+#login-buttons .login-close-text { display: none;}
+#login-buttons #login-buttons-password{
+  
+  
+  
+  padding: 10px;
+  top:20px;
+  margin-top:20px;
+  background-color: rgb(51,153,255);
+  width: 20%;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+#login-buttons .message.error-message{ color: red;}
+
+#login{
+  margin-top: 30px;
+  color: #000;
+  font-family:  arial, sans-serif;
+  font-size: 13px;
+  background-color: #eee;
+  display: inline-block;
+  padding: 10px; 
+  border:solid 1px;
+  border-color: #ddd;
+  border-radius: 5px;
+
+
+}
+
+#login p{ 
+  display: inline; 
+  margin-left: 10px;
+  
+}
+
+#login a{ 
+  text-decoration: none;
+}
+
+#login-container{
+
+  position: absolute;
+  width: 23%;
+  left: 35%;
+  top: 20%;
+  padding: 20px;
+  display: inline-block;
+  background-color: #eee;
+  border:solid 1px;
+  border-color: #ddd;
+  margin: auto;
+  border-radius: 5px;
+}
+
+#login-container input{
+
+  display: block-inline;
+}
+
+#login-container hr{
+  margin: 15px;
+
+}
+
+#login-container .log {
+
+  display: block;
+  margin-top: 10px;
+  width: 90%;
+  padding: 10px;
+
+}
+
+#login-container .add_user {
+
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #8FB5DC;
+
+}
+/*-------------------------*/
+
+
 .grid-layout{
 	width: 80%;
 	margin: 0 auto;
@@ -493,6 +608,20 @@ td.texto-tabla{
   text-shadow:1px 1px 0 #d28344;
 }
 
+/* User button*/
+
+#navigationMenu .addUser {
+  background: url('/user.png'); 
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: rgb(170,34,92);
+}
+#navigationMenu .addUser:hover { }
+#navigationMenu .addUser span{
+  background-color:rgb(170,34,92);
+  color:#223a44;
+  text-shadow:1px 1px 0 #391A2B;
+}
 #proyectos-container{
 	width: 100%;
 	height: 100%;
