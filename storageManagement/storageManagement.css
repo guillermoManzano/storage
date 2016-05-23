@@ -298,15 +298,30 @@ input, textarea{
   width: 14%;
   text-align: center;
   padding: 5px 0;
+  border-radius: 4px;
 }
 
 .timetable tr td:nth-child(2){
   text-align: left;
   width: 20%;
+  padding-left: 10px;
+}
+
+.projectComments{
+  height: 18px;
+  width: 180px;
+  top: 9px;
+  position: relative;
+  border-radius: 3px !important;
+  resize: none;
+  display: inline-block;
+  margin: 0 15px;
+  border: 1px solid #ccc;
 }
 
 .notesActivity{
-  width: 100%; 
+  width: 92%;
+  left: 2%;
   height: 18px;
   position: relative; 
   border: none;

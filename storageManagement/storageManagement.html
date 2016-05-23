@@ -83,21 +83,21 @@
         <div class="divProjectInformation">
           <div class="lineaCampos">
             <a class="texto-campo">Project Name</a>
-            <input class="valor-campo" type="text" name="projectName"/>
+            <input class="valor-campo projectInfo" type="text" name="projectName"/>
             <a class="texto-campo">Reason To Install</a>
-            <input class="valor-campo" type="text" name="installReason"/>
+            <input class="valor-campo projectInfo" type="text" name="installReason"/>
             <a class="texto-campo">Project comments</a>
-            <input class="valor-campo" type="text" name="projectComments"/>
+            <textarea class="projectInfo projectComments" name="projectComments"></textarea>
             <a class="texto-campo">Start date</a>
             <input class="valor-campo stDate" type="text" name="startDate"/>
           </div>
           <div class="lineaCampos">
             <a class="texto-campo">PO</a>
-            <input class="valor-campo" type="text" name="po"/>
+            <input class="valor-campo projectInfo" type="text" name="po"/>
             <a class="texto-campo">Contact name</a>
-            <input class="valor-campo" type="text" name="contactName"/>
+            <input class="valor-campo projectInfo" type="text" name="contactName"/>
             <a style="float:left;" class='texto-campo'>Platform</a>
-              <select class='select-proyecto'>
+              <select class='select-proyecto projectInfo' name="platform">
                 <option value="NAS">BACKUPS</option>
                 <option value="SAN">MAINFRAME</option>
                 <option value="OPEN">TANDEM</option>
@@ -177,7 +177,7 @@
             <div class="dev-pwr" id="dtabs-3">
               <a class="boton-accion">Add</a><br><br>
               <div class='lineaPP'>
-                <a class='texto-campo'>Quantity</a><input class='valor-campo quantityPP' type='text'/>
+                <a class='texto-campo'>Quantity</a><input class='valor-campo quantityPP numberMask' type='text'/>
                 <a class='texto-campo'>Connector Type</a><input class='valor-campo connectorTypePP' type='text'/>
                 <a class='texto-campo'>Phases</a><input class='valor-campo fasesPP' type='text'/>
                 <a class='texto-campo'>Voltaje</a><input class='valor-campo voltajePP' type='text'/>
@@ -186,17 +186,17 @@
             <div  class="dev-ips" id="dtabs-4">
               <a class="boton-accion">Add</a><br><br>
               <div class='lineaIP'>
-                <a class='texto-campo'>Subnet</a><input class='valor-campo devSubnet' type='text'/>
-                <a class='texto-campo'>IP</a><input class='valor-campo devIp' type='text'/>
-                <a class='texto-campo'>Mask</a><input class='valor-campo devMask' type='text'/><br><br>
-                <a class='texto-campo'>Default gateway</a><input class='valor-campo devGateway' type='text'/>
-                <a class='texto-campo'>DNS details</a><input class='valor-campo devDns' type='text'/><br><br>
+                <a class='texto-campo'>Subnet</a><input class='valor-campo devSubnet ipMask' type='text'/>
+                <a class='texto-campo'>IP</a><input class='valor-campo devIp ipMask' type='text'/>
+                <a class='texto-campo'>Mask</a><input class='valor-campo devMask ipMask' type='text'/><br><br>
+                <a class='texto-campo'>Default gateway</a><input class='valor-campo devGateway ipMask' type='text'/>
+                <a class='texto-campo'>DNS details</a><input class='valor-campo devDns ipMask' type='text'/><br><br>
               </div>
             </div>
             <div class="dev-conn" id="dtabs-5">
               <a class="boton-accion">Add</a>
               <div class='lineaPC'>
-                <a class='texto-campo'>Quantity</a><input class='valor-campo quantityPC' type='text'/>
+                <a class='texto-campo'>Quantity</a><input class='valor-campo quantityPC numberMask' type='text'/>
                 <a class='texto-campo'>Connector Type</a><input class='valor-campo connTypePC' type='text'/>
                 <a class='texto-campo'>Cable Type</a><input class='valor-campo cableTypePC' type='text'/><br><br>
                 <a class='texto-campo'>Speed</a><input class='valor-campo speedPC' type='text'/>

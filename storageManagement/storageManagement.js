@@ -273,6 +273,21 @@ if (Meteor.isClient) {
   });
 
   Template.newRequest.events({
+    'change .projectInfo': function(evt){
+      var fieldName = $(evt.target).attr("name");
+      var fieldVal = $(evt.target).val().trim();
+      var updateObj = {};
+      updateObj[fieldName] = fieldVal;
+      console.log("CHANGE2 ",updateObj);
+      if (fieldVal != "") {
+        try{
+          Proyectos.update(Session.get("projectNumber"),{$set:updateObj});
+        } catch(err){
+          console.log("Error updating project info",err);
+        }
+      }
+    },
+
     'click .notesActivity': function(evt){
 
     },
@@ -286,43 +301,65 @@ if (Meteor.isClient) {
         var actId = parseInt($(evt.target).parent().siblings(".actid").text());
         var actRes = $(evt.target).parent().prev("td").children(".actResponsable").val();
         var accomplished = new Date(new Date().setHours(0,0,0,0));
+        
         $(evt.target).parent().parent();
-        var statusEx = Status.find({project:Session.get("projectNumber"), "activity":actId}).fetch();
-        if (statusEx.length < 1){
-          try {
-
-            Status.insert({project:Session.get("projectNumber"), activity:actId, status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()});
-            $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
-            var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
-            if (est < accomplished.getTime()){
-              $(evt.target).parent().parent().css({"background-color":"red"});
-            }else if (est > accomplished.getTime()){
-              $(evt.target).parent().parent().css({"background-color":"green"});
+        var canCheck = true;
+        if (actStatus){
+          var deps = checkActivityDependency(actId);
+          if (deps.length > 0) {
+            for (var nn=0;nn<deps.length;nn++){
+              var depRow = $(".actid").filter(function() {
+                  return $(this).text() === ""+deps[nn];
+              });
+              var depStatus = $(".checks-time",$(depRow).parent()).prop("checked");
+              if (!depStatus){
+                canCheck = false;
+                $(evt.target).prop("checked",false);
+                alert("Check dependencies!");
+                break;
+              }
             }
-          } catch(err){
-            console.log("ERROR INSERT STATUS",err);
           }
-        } else {
-          try {
-            var fechaStatus = statusEx[0].fechaEst;
-            $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
-              //fechaStatus = "";
-            if (!actStatus){
-              $(evt.target).parent().siblings(".real-time").text("");
-              $(evt.target).parent().parent().css({"background-color":"white"});
-              Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes}});
-              Status.update(statusEx[0]["_id"],{$unset:{fechaAccomp:{$exists:true}}});
-            } else {
+        }
+
+        if (canCheck) {
+          var statusEx = Status.find({project:Session.get("projectNumber"), "activity":actId}).fetch();
+          if (statusEx.length < 1){
+            try {
+
+              Status.insert({project:Session.get("projectNumber"), activity:actId, status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()});
+              $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
               var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
               if (est < accomplished.getTime()){
                 $(evt.target).parent().parent().css({"background-color":"red"});
               }else if (est > accomplished.getTime()){
                 $(evt.target).parent().parent().css({"background-color":"green"});
               }
-              Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
+            } catch(err){
+              console.log("ERROR INSERT STATUS",err);
             }
-          }catch(err){
-            console.log("ERROR EDIT STATUS",err);
+          } else {
+            try {
+              var fechaStatus = statusEx[0].fechaEst;
+              $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
+                //fechaStatus = "";
+              if (!actStatus){
+                $(evt.target).parent().siblings(".real-time").text("");
+                $(evt.target).parent().parent().css({"background-color":"white"});
+                Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes}});
+                Status.update(statusEx[0]["_id"],{$unset:{fechaAccomp:{$exists:true}}});
+              } else {
+                var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
+                if (est < accomplished.getTime()){
+                  $(evt.target).parent().parent().css({"background-color":"red"});
+                }else if (est > accomplished.getTime()){
+                  $(evt.target).parent().parent().css({"background-color":"green"});
+                }
+                Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
+              }
+            }catch(err){
+              console.log("ERROR EDIT STATUS",err);
+            }
           }
         }
       }
@@ -334,15 +371,26 @@ if (Meteor.isClient) {
     },
 
     'click .back': function(evt){ 
-      if(confirm("Dismiss project?")){
-        Session.set("creatingProject");
+      console.log("EBACK ",edicionProyecto);
+      if (edicionProyecto) {
         try {
-          Proyectos.remove({_id:Session.get("projectNumber")});
           edicionProyecto = false;
           Blaze.remove(newRequestView);
           viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
         } catch (err){
           alert("Oops, Something went wrong!");
+        }
+      } else {
+        if(confirm("Dismiss project?")){
+          Session.set("creatingProject");
+          try {
+            Proyectos.remove({_id:Session.get("projectNumber")});
+            edicionProyecto = false;
+            Blaze.remove(newRequestView);
+            viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
+          } catch (err){
+            alert("Oops, Something went wrong!");
+          }
         }
       }
     },
@@ -494,9 +542,10 @@ if (Meteor.isClient) {
       });
 
       $.each(actividadesFase, function(y, act){
+        var dep = -1;
         if (act.dependency && act.dependency.length > 0){
 
-        }
+        } 
         divFase += "<tr class='trAct'><td class='actid' style='display:none;'>"+act.id+"</td><td>"+act.actName+"</td><td>"+act.time+"</td><td><select class='actResponsable'><option>Michel</option><option>Alfredo</option></select></td><td><input class='checks checks-time' type='checkbox'/></td><td class='estimated-time'></td><td class='real-time'></td><td><textarea class='notesActivity'></textarea></td></tr>";
       });
       divFase += "</table></div>";
@@ -514,6 +563,23 @@ if (Meteor.isClient) {
       }
     });
     $(".accordion_timeline").accordion();
+
+    $('.projectComments').on({
+      "click": function() {
+        console.log("CLICK( ",$(this));
+        if ($(this).val().trim() != "") {
+          console.log("entro2( ",$(this).val());
+          $(this).tooltip({ items: ".projectComments", content: $(this).val()});
+          console.log("open2 ");
+          $(this).tooltip("open");
+        }
+      },
+      "mouseout": function() {      
+        if ($(this).val().trim() != "") {
+          $(this).tooltip("disable");   
+        }
+      }
+    });
 
     $('.notesActivity').on({
       "click": function() {
@@ -653,6 +719,10 @@ if (Meteor.isClient) {
       });
 
     });
+    
+    Inputmask("numeric").mask(".numberMask");
+    Inputmask("ip").mask(".ipMask");
+
     if (edicionProyecto){
       var edit = Proyectos.find({_id:Session.get("projectNumber")}).fetch();
       editarProyecto(edit[0]);
@@ -764,7 +834,7 @@ if (Meteor.isClient) {
       var cantEq = 1//$(".cantidadEq").val();
       console.log("CANTEQ ",cantEq);
       for (var x=0;x<cantEq;x++) {
-        textoEq += "<br/><div class='lineaSN'><p class='texto-campo'>Family</p><select class='select-proyecto equipo'><option value='vnx5000'>VNX</option><option value='vnx40'>VMAX</option><option value='vnx100'>CENTERA</option><option value='vnx100'>DATA DOMAIN</option><option value='vnx100'>CENTERA</option><option value='vnx100'>CLARION</option><option value='vnx100'>SWITCHES</option></select>"+
+        textoEq += "<br/><div class='lineaSN'><p class='texto-campo'>Family</p><select class='select-proyecto equipo'><option value='VNX'>VNX</option><option value='VMAX'>VMAX</option><option value='CENTERA'>CENTERA</option><option value='DATA DOMAIN'>DATA DOMAIN</option><option value='CLARION'>CLARION</option><option value='SWITCHES'>SWITCHES</option></select>"+
         "<p class='texto-campo'>Model</p><select class='select-proyecto equipo'><option value='vnx5000'>vnx5000</option><option value='vnx40'>vnx40</option><option value='vnx100'>vnx100</option></select>"+
         "<p class='texto-campo' style='float:left;'>Site</p><select class='site' style='float:left;'><option value='jrdc'>JRDC</option><option value='qrdc'>QRDC</option></select><br/><br/>"+
         "<p class='texto-campo'>Tipo</p><input class='tipoEq valor-campo' type='text' value='"+tipoEq+"'/>"+

@@ -83,14 +83,28 @@ actualizaTimeline = function(stDate){
                 estimated += 86400000*tiempoDependencia;
             }
 
-            if (!edicionProyecto)
+            if (!edicionProyecto) {
                 Status.insert({project:Session.get("projectNumber"), activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
+            } else {
+                var reg = Status.find({project:Session.get("projectNumber"), "activity":idAct}).fetch();
+                Status.update(reg[0]["_id"],{$set:{fechaInicio:estimated}});
+            }
 
             $($("td",$(this))[5]).text(formatoFechaLargo(new Date(estimated)));
             $($("td",$(this))[5]).data({"estimated":new Date(estimated).getTime()});
             fechaaTarea = estimated;
         });
     });
+}
+
+checkActivityDependency = function(actId){
+    var actOn = Activities.find({id:actId}).fetch();
+    if(actOn.length > 0) {
+        if (actOn[0].dependency && actOn[0].dependency.length > 0) {
+            return actOn[0].dependency;
+        }
+    }
+    return [];
 }
 
 edicionStatus = function(){
@@ -124,13 +138,21 @@ edicionStatus = function(){
 editarProyecto = function(proyecto){
     
     if (proyecto.projectName)
-        $(".projectName").val(proyecto.projectName);
+        $("input[name='projectName']").val(proyecto.projectName);
+    if (proyecto.installReason)
+        $("input[name='installReason']").val(proyecto.installReason);
+    if (proyecto.installReason)
+        $("textarea[name='projectComments']").val(proyecto.projectComments);
+    if (proyecto.installReason)
+        $("input[name='contactName']").val(proyecto.contactName);
+    if (proyecto.installReason)
+        $("input[name='po']").val(proyecto.po);
     if (proyecto.proyectManager)
         $(".proyectManager").val(proyecto.proyectManager);
-    if (proyecto.plataforma)
-        $(".plataforma").val(proyecto.plataforma);
+    if (proyecto.platform)
+        $("select[name='platform']").val(proyecto.platform);
     if (proyecto.fechaInicio) {
-        $(".stDate").datepicker("setDate",proyecto.fechaInicio);
+        $(".stDate").datepicker("setDate",new Date(proyecto.fechaInicio));
         actualizaTimeline(proyecto.fechaInicio);
         edicionStatus();
     }
