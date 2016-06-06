@@ -27,7 +27,7 @@ if (Meteor.isClient) {
 	Template.header.onRendered(function () {
   	
   		view = Blaze.getView(document.getElementById('login-buttons'));
-        console.log("VIEW ",view);
+        //console.log("VIEW ",view);
         Blaze.remove(view);
 	});
 
@@ -99,7 +99,7 @@ if (Meteor.isClient) {
 }
 
 if(Meteor.isServer){
-  Meteor.startup(function(){
+
     Meteor.methods({
 
       insertUser: function(username,password,email,profile,administrador,project,breakFix,read,write){
@@ -121,5 +121,5 @@ if(Meteor.isServer){
       }
       
     });
-  });
+
 }

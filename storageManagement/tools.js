@@ -84,10 +84,16 @@ actualizaTimeline = function(stDate){
             }
 
             if (!edicionProyecto) {
-                Status.insert({project:Session.get("projectNumber"), activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
+                //Status.insert({project:Session.get("projectNumber"), activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
+                Meteor.call("updateActivitiesStatus",Session.get("projectNumber"),idAct,actRes,estimated,function(error,result){
+                    if(error) console.log("Error, no se pudo actualizar el id de Actividad en Status");
+                });
             } else {
                 var reg = Status.find({project:Session.get("projectNumber"), "activity":idAct}).fetch();
-                Status.update(reg[0]["_id"],{$set:{fechaInicio:estimated}});
+                //Status.update(reg[0]["_id"],{$set:{fechaInicio:estimated}});
+                Meteor.call("updateDateStatus2",reg[0]["_id"],estimated,function(error,result){
+                    if (error) console.log("Error, no se pudo actualizar la fecha del proyecto");
+                });
             }
 
             $($("td",$(this))[5]).text(formatoFechaLargo(new Date(estimated)));

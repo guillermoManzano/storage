@@ -54,12 +54,18 @@ if (Meteor.isClient) {
       
     });
 
+
+  Template.cuerpo.onCreated(function(){
+    this.subscribe("proyectos");
+    this.subscribe("discos");
+    this.subscribe("tiers");
+  });
+
   Template.cuerpo.onRendered(function(){
-    Meteor.call("listaProyectos",function(){
-        console.log("LIsTO CALL12");
-      });
-    var listProyectos = Proyectos.find().fetch();
-        console.log("kekek ",listProyectos);
+    Meteor.call("listaProyectos",function(error,result){
+        var listProyectos = Proyectos.find().fetch();
+        console.log("Lista de Proyectos",listProyectos);
+
         var source ={
           datatype: "json",
           datafields: [
@@ -75,8 +81,7 @@ if (Meteor.isClient) {
         };
         var dataAdapter = new $.jqx.dataAdapter(source);
         
-        $("#proyectosGrid").jqxGrid(
-            {
+        $("#proyectosGrid").jqxGrid({
                 width: 1500,
                 source: dataAdapter,                
                 pageable: true,
@@ -96,11 +101,12 @@ if (Meteor.isClient) {
                   { text: 'COMMITMENT DATE', datafield: 'fechaCompromiso' },
                   { text: 'SITE', datafield: 'site', width: 200 }
                 ]
-            });
+        });
+      
 
-
-        $('.fechaCompromiso').datepicker({"dateFormat": "dd/mm/yy"});
-        //$(".fechaCompromiso").datepicker( "option", "dateFormat", "dd/mm/yyyy");
+      $('.fechaCompromiso').datepicker({"dateFormat": "dd/mm/yy"});
+      //$(".fechaCompromiso").datepicker( "option", "dateFormat", "dd/mm/yyyy");
+    });
   });
 
   /*
@@ -130,6 +136,7 @@ if (Meteor.isClient) {
             //{ type: "control" }
           ]
         });*/
+
         return;
       }
     });
@@ -140,6 +147,7 @@ if (Meteor.isClient) {
 
     Template.menu.events({
       "click .projects": function(evt){
+
         viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
         console.log("VIEW ",viewVar);
         //Session.set("projectListView", view);
@@ -259,10 +267,20 @@ if (Meteor.isClient) {
         }
       } else {
         try {
-          var resPro = Proyectos.insert({projectName:"Test2", "opts":Session.get("newRequestOpts")});
-          Session.set("creatingProject",true);
-          Session.set("projectNumber",resPro);
-          console.log("RESPUEPRO ",resPro);
+          //var resPro = Proyectos.insert({projectName:"Test2", "opts":});
+          var resPro;
+          Meteor.call('newProject',Session.get("newRequestOpts"),function(error,result){
+
+            if(error) { console.log("Error al crear el nuevo proyecto"); }
+            else {
+              Session.set('idProyecto',result); 
+              Session.set("creatingProject",true);
+              Session.set("projectNumber",Session.get('idProyecto'));
+              console.log("id del nuevo proyecto: ", Session.get('projectNumber'));
+            }
+          });
+
+        
         } catch(err) {
           alert("ERROR "+err);
         }
@@ -281,7 +299,10 @@ if (Meteor.isClient) {
       console.log("CHANGE2 ",updateObj);
       if (fieldVal != "") {
         try{
-          Proyectos.update(Session.get("projectNumber"),{$set:updateObj});
+          //Proyectos.update(Session.get("projectNumber"),{$set:updateObj});
+          Meteor.call("updateProject",Session.get("projectNumber"),updateObj,function(error,result){
+            if(error) console.log("Error al editar el nombre del proyecto");
+          });
         } catch(err){
           console.log("Error updating project info",err);
         }
@@ -326,15 +347,21 @@ if (Meteor.isClient) {
           var statusEx = Status.find({project:Session.get("projectNumber"), "activity":actId}).fetch();
           if (statusEx.length < 1){
             try {
+              //Status.insert({project:Session.get("projectNumber"), activity:actId, status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()});
+              Meteor.call("insertStatus",Session.get("projectNumber"),actId,actStatus,actRes,accomplished.getTime(),function(error,result){
+                if(error) console.log("Error al insertar Status");
+                else{
+                  $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
+                  var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
+                  if (est < accomplished.getTime()){
+                    $(evt.target).parent().parent().css({"background-color":"red"});
+                  }else if (est > accomplished.getTime()){
+                    $(evt.target).parent().parent().css({"background-color":"green"});
+                  }
 
-              Status.insert({project:Session.get("projectNumber"), activity:actId, status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()});
-              $(evt.target).parent().siblings(".real-time").text(formatoFechaLargo(accomplished));
-              var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
-              if (est < accomplished.getTime()){
-                $(evt.target).parent().parent().css({"background-color":"red"});
-              }else if (est > accomplished.getTime()){
-                $(evt.target).parent().parent().css({"background-color":"green"});
-              }
+                }
+              });
+              
             } catch(err){
               console.log("ERROR INSERT STATUS",err);
             }
@@ -346,8 +373,14 @@ if (Meteor.isClient) {
               if (!actStatus){
                 $(evt.target).parent().siblings(".real-time").text("");
                 $(evt.target).parent().parent().css({"background-color":"white"});
-                Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes}});
-                Status.update(statusEx[0]["_id"],{$unset:{fechaAccomp:{$exists:true}}});
+                Meteor.call("updateStatus",statusEx[0]["_id"],actStatus,actRes,function(error,result){
+                  if(error) console.log("No se pudo actualizar el Status");
+                });
+                //Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes}});
+                Meteor.call("updateDateStatus",statusEx[0]["_id"],function(error,result){
+                  if(error) console.log("No se pudo actualizar la fecha del Status");
+                });
+                //Status.update(statusEx[0]["_id"],{$unset:{fechaAccomp:{$exists:true}}});
               } else {
                 var est = $($("td",$(evt.target).parent().parent())[5]).data("estimated");
                 if (est < accomplished.getTime()){
@@ -355,7 +388,10 @@ if (Meteor.isClient) {
                 }else if (est > accomplished.getTime()){
                   $(evt.target).parent().parent().css({"background-color":"green"});
                 }
-                Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
+                Meteor.call("updateNewStatus",statusEx[0]["_id"],actStatus,actRes,accomplished.getTime(),function(error,result){
+                  if(error) console.log("No se pudo actualizar el Status");
+                });
+                //Status.update(statusEx[0]["_id"],{$set:{status:actStatus, responsable:actRes, fechaAccomp:accomplished.getTime()}});
               }
             }catch(err){
               console.log("ERROR EDIT STATUS",err);
@@ -384,10 +420,15 @@ if (Meteor.isClient) {
         if(confirm("Dismiss project?")){
           Session.set("creatingProject");
           try {
-            Proyectos.remove({_id:Session.get("projectNumber")});
-            edicionProyecto = false;
-            Blaze.remove(newRequestView);
-            viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
+            Meteor.call('dismissProject',Session.get("projectNumber"),function(error,result){
+              if(error) console.log("Error al borrar el proyecto");
+              //Proyectos.remove({_id:Session.get("projectNumber")});
+              edicionProyecto = false;
+              Blaze.remove(newRequestView);
+              viewVar = Blaze.render(Template.cuerpo, $("body").get(0));
+
+            });
+            
           } catch (err){
             alert("Oops, Something went wrong!");
           }
@@ -460,7 +501,7 @@ if (Meteor.isClient) {
       newDevice.power = power;
 
       var ips =[];
-      $.each($(".devSubnet"), function(){
+      $.each($(".lineaIP"), function(){
         var ip = {
           devSubnet: $(".devSubnet", $(this)).val(),
           devIP: $(".devIP", $(this)).val(),
@@ -498,24 +539,30 @@ if (Meteor.isClient) {
       newDevice.storage = strg;
 
       try {
-        Equipos.insert(newDevice);
-        var listEquipos = Equipos.find({project:Session.get("projectNumber")}).fetch();
-        console.log("kekek ",listEquipos);
-        var source ={
-          datatype: "json",
-          datafields: [
-            { name: '_id', type: 'string' },
-            { name: 'devName', type: 'string' },
-            { name: 'devFamily', type: 'string' },
-            { name: 'devModel', type: 'string' },
-            { name: 'devTipo', type: 'string' },
-            { name: 'devSite', type: 'string' }
-          ],
-          localdata: listEquipos
-        };
-        var dataAdapterDev = new $.jqx.dataAdapter(source);
+        //Equipos.insert(newDevice);
+        Meteor.call("newEquipo",newDevice,function(error,result){
+          if(error) console.log("No se pudo insertar el equipo");
+          else{
+            var listEquipos = Equipos.find({project:Session.get("projectNumber")}).fetch();
+            console.log("Lista de equipos para este proyecto",listEquipos);
+            var source ={
+              datatype: "json",
+              datafields: [
+                { name: '_id', type: 'string' },
+                { name: 'devName', type: 'string' },
+                { name: 'devFamily', type: 'string' },
+                { name: 'devModel', type: 'string' },
+                { name: 'devTipo', type: 'string' },
+                { name: 'devSite', type: 'string' }
+              ],
+              localdata: listEquipos
+            };
+            var dataAdapterDev = new $.jqx.dataAdapter(source);
+            $(".deviceTable").jqxGrid({source:dataAdapterDev});
 
-        $(".deviceTable").jqxGrid({source:dataAdapterDev});
+          }
+        });
+      
       } catch(err) {
         alert("ERROR "+err);
       }
@@ -524,7 +571,17 @@ if (Meteor.isClient) {
 
   });
 
+  Template.newRequest.onCreated(function(){
+    this.subscribe("proyectos");
+    this.subscribe("equipos");
+    this.subscribe("phases");
+    this.subscribe("activities");
+    this.subscribe("status");
+  });
+
   Template.newRequest.onRendered(function(){
+
+    Meteor.call("editProyecto", function(){
     opts = Session.get("newRequestOpts");
     console.log("OPTs ",opts);
     console.log("OPT1 ",opts.pp);
@@ -558,7 +615,10 @@ if (Meteor.isClient) {
       onSelect: function(dateText) {
         console.log("Selected date: " + dateText + "; input's current value: " + this.value);
         var projectStart = $(".stDate").datepicker("getDate").getTime();
-        Proyectos.update(Session.get("projectNumber"),{$set:{"fechaInicio":projectStart}});
+        //Proyectos.update(Session.get("projectNumber"),{$set:{"fechaInicio":projectStart}});
+        Meteor.call("updateDateProject",Session.get("projectNumber"),projectStart,function(error,result){
+          if(error) console.log("No se pudo actualizar la fecha");
+        });
         actualizaTimeline(projectStart);
       }
     });
@@ -600,7 +660,10 @@ if (Meteor.isClient) {
         var actid = parseInt($(this).parent().siblings(".actid").text());
         var reg = Status.find({project:Session.get("projectNumber"), "activity":actid}).fetch();
         try {
-          Status.update(reg[0]["_id"],{$set:{notes:$(this).val().trim()}});
+          //Status.update(reg[0]["_id"],{$set:{notes:$(this).val().trim()}});
+          Meteor.call("updateNotesStatus",reg[0]["_id"],$(this).val().trim(),function(error,result){
+            if(error) console.log("No se pudo actualizar notes en Status");
+          });
         }catch(err){
           console.log("Update notes status: ",err);
         }
@@ -622,7 +685,7 @@ if (Meteor.isClient) {
       
 
     var listEquipos = Equipos.find({project:Session.get("projectNumber")}).fetch();
-        console.log("kekek ",listEquipos);
+        console.log("Lista de Equipos ",listEquipos);
         var source ={
           datatype: "json",
           datafields: [
@@ -728,6 +791,10 @@ if (Meteor.isClient) {
       editarProyecto(edit[0]);
     }
     opts =  null; 
+
+
+
+    });
   });
 
   Template.modalNuevo.onRendered(function(){
@@ -740,7 +807,10 @@ if (Meteor.isClient) {
         if(confirm("Dismiss project?")){
           Session.set("creatingProject");
           try {
-            Proyectos.remove({_id:Session.get("projectNumber")});
+            //Proyectos.remove({_id:Session.get("projectNumber")});
+            Meteor.call("dismissProject",Session.get("projectNumber"),function(error,result){
+              if(error) console.log("Error, no se pudo eliminar el proyecto");
+            });
             Blaze.remove(newRequestView);
           } catch (err){
             alert("Oops, Something went wrong!");
@@ -772,7 +842,7 @@ if (Meteor.isClient) {
       var proyId = $("#proyectosGrid").jqxGrid('getrowdatabyid',rowId)._id
       var proyecto = Proyectos.find({_id:proyId}).fetch();
       Blaze.remove(viewVar);
-      console.log("EDIT PROY ",proyecto);
+      console.log("Edición del Proyecto: ",proyecto);
       Session.set("projectNumber",proyecto[0]["_id"]);
       Session.set("newRequestOpts",proyecto[0].opts);
       newRequestView = Blaze.render(Template.newRequest, $("body").get(0));
@@ -1004,11 +1074,17 @@ if (Meteor.isClient) {
         proyectoNuevo.powerCabling = pcs;
       if (edicionProyecto){
         console.log("EDITION ",proyectoNuevo);
-        Proyectos.update($(".id_").val(),{$set:proyectoNuevo});
+        //Proyectos.update($(".id_").val(),{$set:proyectoNuevo});
+        Meteor.call("updateProject",$(".id_").val(),proyectoNuevo,function(error,result){
+          if(error) console.log("Error, no se pudo actualizar el Proyecto");
+        });
       } else {
         proyectoNuevo.fechaInicio= formatoFecha(new Date());
         console.log("NUEVO!!!! ",proyectoNuevo);
-        Proyectos.insert(proyectoNuevo);
+        //Proyectos.insert(proyectoNuevo);
+        Meteor.call("insertProject",proyectoNuevo,function(error,result){
+          if(error) console.log("Error, no se pudo insertar el nuevo proyecto");
+        });
       }
       actualizaGrid();
       $("#proyectos-container").show();
@@ -1019,7 +1095,97 @@ if (Meteor.isClient) {
 
 
 if (Meteor.isServer) {
-  Meteor.startup(function () {
-    // code to run on server at startup
+
+  Meteor.publish('proyectos',function(){
+    return Proyectos.find();
+  });
+
+  Meteor.publish('equipos',function(){
+    return Equipos.find();
+  });
+
+  Meteor.publish('tiers',function(){
+    return Tiers.find();
+  });
+
+  Meteor.publish('discos',function(){
+    return Discos.find();
+  });
+
+  Meteor.publish('phases',function(){
+    return Phases.find();
+  });
+
+  Meteor.publish('activities',function(){
+    return Activities.find();
+  });
+
+   Meteor.publish('status',function(){
+    return Status.find();
+  });
+
+  Meteor.methods({
+
+    /*Operaciones sobre la colección Proyectos*/
+
+    newProject: function(newRequestOpts){
+      var idNuevoProyecto = Proyectos.insert({projectName:"Test2", "opts":newRequestOpts});
+      return idNuevoProyecto;
+    },
+
+    insertProject: function(proyectoNuevo){
+      Proyectos.insert(proyectoNuevo);
+    },
+
+    dismissProject: function(idProyecto){
+      Proyectos.remove({_id:idProyecto});
+    },
+
+    updateProject: function(proyectoId,newObject){
+      Proyectos.update(proyectoId,{$set:newObject});
+    },
+
+    updateDateProject: function(proyectoId,newDate){
+      Proyectos.update(proyectoId,{$set:{"fechaInicio":newDate}});
+    },
+
+    /*Operaciones sobre la colección Equipos*/
+
+    newEquipo: function(newDevice){
+      Equipos.insert(newDevice);
+    },
+
+    /*Operaciones sobre la colección de Status*/
+    insertStatus: function(proyectoId,actId,actStatus,actRes,date){
+      Status.insert({project:proyectoId, activity:actId, status:actStatus, responsable:actRes, fechaAccomp:date});
+    },
+
+    updateStatus: function(proyectoId,actStatus,actRes){
+      Status.update(proyectoId,{$set:{status:actStatus, responsable:actRes}});
+    },
+
+    updateDateStatus: function(proyectoId){
+      Status.update(proyectoId,{$unset:{fechaAccomp:{$exists:true}}});
+    },
+
+    updateDateStatus2: function(proyectoId,estimated){
+      Status.update(proyectoId,{$set:{fechaInicio:estimated}});
+    },
+
+    updateNewStatus: function(proyectoId,actStatus,actRes,date){
+      Status.update(proyectoId,{$set:{status:actStatus, responsable:actRes, fechaAccomp:date}});
+    },
+
+    updateNotesStatus: function(proyectoId,newNote){
+      Status.update(proyectoId,{$set:{notes:newNote}});
+    },
+
+    updateActivitiesStatus: function(proyectoId,idAct,actRes,estimated){
+      Status.insert({project:proyectoId, activity:idAct, status:false, responsable:actRes, fechaEst: estimated});
+    }
+
+    /*Operaciones sobre la colección de Activities*/
+   
+      
   });
 }
